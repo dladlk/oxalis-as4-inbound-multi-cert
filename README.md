@@ -1,6 +1,8 @@
 # Oxalis-AS4 Inbound Multiple Certificate Endpoints
 
-POC module to check possibility to register multiple CXF endpoints on the same Oxalis instance to work with different certificates
+POC module to check possibility to register multiple CXF endpoints on the same Oxalis instance to work with different certificates.
+
+Initially developed for [NemHandel eDelivery](https://rep.erst.dk/git/openebusiness/nemhandeledelivery) extension of Oxalis-AS4, but should be usable also in a plain Peppol Oxalis-AS4
 
 # Installation
 
@@ -51,6 +53,15 @@ oxalis.multicert.endpoints = [
 This implementation exposes /as4/status with overview of configured endpoints:
 
 http://localhost:8080/as4/status
+
+```
+version.oxalis.as4: 1.1.0
+version.java: 21
+mode: NEMHANDEL_TEST
+multi.cert.endpoints.size: 2
+multi.cert.endpoints[1].path: 
+multi.cert.endpoints[2].path: /endpoint2
+```
 
 # Build
 
