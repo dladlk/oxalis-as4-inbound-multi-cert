@@ -163,6 +163,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>network.oxalis</groupId>
+            <artifactId>oxalis-inbound</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>

@@ -1,0 +1,34 @@
+<configuration>
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+    	<!-- reset all previous level configurations of all j.u.l. loggers -->
+    	<resetJUL>true</resetJUL>
+	</contextListener>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS} [%level] [%c] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.apache.cxf" level="warn"/>
+    
+    <!-- CXF ClientImpl uses java.util.logging (JUL), so jul-to-slf4j is required and
+
+			SLF4JBridgeHandler.removeHandlersForRootLogger();
+			SLF4JBridgeHandler.install();
+			
+		in some bootstrap code (e.g. in SendLocalTest).
+	-->
+    
+    <!-- <logger name="org.apache.cxf.endpoint.ClientImpl" level="trace"/> -->
+    
+    <logger name="org.testng" level="warn"/>
+    <logger name="network.oxalis.commons.settings.SettingsBuilder" level="warn"/>
+    <logger name="network.oxalis.outbound.transmission.MessageSenderFactory" level="warn"/>
+
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>
