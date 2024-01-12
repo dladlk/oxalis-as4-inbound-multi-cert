@@ -10,7 +10,7 @@ import network.oxalis.vefa.peppol.mode.Mode;
  */
 @Data
 public class EndpointConfigData {
-	EndpointConfig endpointConfig;
-	KeyStore keystore;
-	Mode mode;
+	private EndpointConfig endpointConfig;
+	private KeyStore keystore;
+	private Mode mode;
 }
