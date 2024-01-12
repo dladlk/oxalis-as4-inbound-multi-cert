@@ -11,7 +11,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 import lombok.extern.slf4j.Slf4j;
-import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.Endpoint;
+import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.EndpointConfig;
 import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.MultiCertConfig;
 
 @Slf4j
@@ -25,10 +25,10 @@ public class As4MultiCertConfigProviderTest {
 		MultiCertConfig config = configProvider.getConfig();
 		log.info("MultiCert Config: {}", config);
 		assertNotNull(config);
-		List<Endpoint> endpoints = config.getEndpoints();
+		List<EndpointConfig> endpoints = config.getEndpoints();
 		assertNotNull(endpoints);
 		assertTrue(config.getEndpoints().size() > 0);
-		for (Endpoint endpoint : endpoints) {
+		for (EndpointConfig endpoint : endpoints) {
 			assertNotNull(endpoint.getUrlPath());
 			assertNotNull(endpoint.getKeystore());
 			assertNotNull(endpoint.getKeystore().getPath());

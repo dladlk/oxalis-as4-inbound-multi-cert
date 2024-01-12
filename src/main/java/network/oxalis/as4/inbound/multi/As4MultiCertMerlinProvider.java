@@ -19,7 +19,7 @@ import com.google.inject.name.Named;
 import lombok.extern.slf4j.Slf4j;
 import network.oxalis.api.lang.OxalisLoadingException;
 import network.oxalis.as4.common.MerlinProvider;
-import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.EndpointKeystore;
+import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.EndpointKeystoreConfig;
 
 @Slf4j
 @Singleton
@@ -35,7 +35,7 @@ public class As4MultiCertMerlinProvider {
 		this.defaultMerlin = merlinProvider.getMerlin();
 	}
 
-	public Merlin getMerlin(EndpointKeystore endpointKeystoreConf) {
+	public Merlin getMerlin(EndpointKeystoreConfig endpointKeystoreConf) {
 		Merlin merlin = new Merlin();
 		merlin.setCryptoProvider(BouncyCastleProvider.PROVIDER_NAME);
 		merlin.setKeyStore(this.loadKeyStore(endpointKeystoreConf, confFolder));
@@ -43,7 +43,7 @@ public class As4MultiCertMerlinProvider {
 		return merlin;
 	}
 
-	protected KeyStore loadKeyStore(EndpointKeystore endpointKeystoreConf, Path confFolder) {
+	protected KeyStore loadKeyStore(EndpointKeystoreConfig endpointKeystoreConf, Path confFolder) {
 		if (endpointKeystoreConf == null) {
 			return null;
 		}

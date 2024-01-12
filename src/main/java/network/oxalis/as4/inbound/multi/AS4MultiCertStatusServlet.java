@@ -12,7 +12,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import network.oxalis.as4.inbound.OxalisAS4Version;
-import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.Endpoint;
+import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.EndpointConfig;
 import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.MultiCertConfig;
 import network.oxalis.vefa.peppol.mode.Mode;
 
@@ -41,9 +41,9 @@ public class AS4MultiCertStatusServlet extends HttpServlet {
 
 		if (this.multiCertConf != null && this.multiCertConf.getEndpoints() != null) {
 			writer.println("multi.cert.endpoints.size: " + this.multiCertConf.getEndpoints().size());
-			List<Endpoint> endpoints = this.multiCertConf.getEndpoints();
+			List<EndpointConfig> endpoints = this.multiCertConf.getEndpoints();
 			for (int i = 0; i < endpoints.size(); i++) {
-				Endpoint endpoint = endpoints.get(i);
+				EndpointConfig endpoint = endpoints.get(i);
 				writer.println("multi.cert.endpoints[" + (i + 1) + "].path: " + endpoint.getUrlPath());
 			}
 		}

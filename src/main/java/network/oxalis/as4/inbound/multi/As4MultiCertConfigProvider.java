@@ -26,7 +26,7 @@ public class As4MultiCertConfigProvider {
 
 	@Data
 	public static class MultiCertConfig {
-		private List<Endpoint> endpoints;
+		private List<EndpointConfig> endpoints;
 		
 		@Override
 		public String toString() {
@@ -38,7 +38,7 @@ public class As4MultiCertConfigProvider {
 				sb.append("'endpoint config ");
 				sb.append(i);
 				sb.append("'={");
-				Endpoint endpoint = this.endpoints.get(i);
+				EndpointConfig endpoint = this.endpoints.get(i);
 				sb.append(endpoint);
 				sb.append("}\n");
 			}
@@ -48,11 +48,11 @@ public class As4MultiCertConfigProvider {
 	}
 
 	@Data
-	public static class Endpoint {
+	public static class EndpointConfig {
 		private String id;
 		private String name;
 		private String urlPath;
-		private EndpointKeystore keystore;
+		private EndpointKeystoreConfig keystore;
 		
 		@Override
 		public String toString() {
@@ -78,10 +78,10 @@ public class As4MultiCertConfigProvider {
 	}
 
 	@Data
-	public static class EndpointKeystore {
+	public static class EndpointKeystoreConfig {
 		private String path;
 		private String password;
-		private EndpointKeystoreKey key;
+		private EndpointKeystoreKeyConfig key;
 		
 		@Override
 		public String toString() {
@@ -98,7 +98,7 @@ public class As4MultiCertConfigProvider {
 	}
 
 	@Data
-	public static class EndpointKeystoreKey {
+	public static class EndpointKeystoreKeyConfig {
 		private String alias;
 		private String password;
 		
