@@ -41,9 +41,11 @@ public class AS4MultiCertStatusServlet extends HttpServlet {
 		writer.println("mode: " + mode.getIdentifier());
 
 		if (this.multiCertConfigData != null && this.multiCertConfigData.getEndpointConfigDataList() != null) {
+			writer.println("");
 			writer.println("multi.cert.endpoints.size: " + this.multiCertConfigData.getEndpointConfigDataList().size());
 			List<EndpointConfigData> endpoints = this.multiCertConfigData.getEndpointConfigDataList();
 			for (int i = 0; i < endpoints.size(); i++) {
+				writer.println("");
 				String prefix = "multi.cert.endpoints[" + (i + 1) + "].";
 				EndpointConfigData endpoint = endpoints.get(i);
 				EndpointConfig endpointConfig = endpoint.getEndpointConfig();
@@ -54,6 +56,12 @@ public class AS4MultiCertStatusServlet extends HttpServlet {
 				}
 				if (endpointConfig.getName() != null) {
 					writer.println(prefix + "name: " + endpointConfig.getName());
+				}
+				if (endpoint.getKeystoreCertificate() != null) {
+					writer.println(prefix + "certificate: " + endpoint.getKeystoreCertificate().getSubjectX500Principal().toString());
+				}
+				if (endpoint.getTruststoreFirstCertificate() != null) {
+					writer.println(prefix + "truststore.certificate: " + endpoint.getTruststoreFirstCertificate().getSubjectX500Principal().toString());
 				}
 			}
 		}
