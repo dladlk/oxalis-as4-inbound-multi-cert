@@ -3,6 +3,9 @@ package network.oxalis.as4.inbound.multi;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.junit.Test;
@@ -12,23 +15,28 @@ import com.typesafe.config.ConfigFactory;
 
 import lombok.extern.slf4j.Slf4j;
 import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.EndpointConfig;
-import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.MultiCertConfig;
+import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.EndpointConfigData;
+import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.MultiCertConfigData;
 
 @Slf4j
 public class As4MultiCertConfigProviderTest {
 
 	@Test
-	public void testGetConfig() {
+	public void testGetConfig() throws URISyntaxException {
 		Config referenceConfig = ConfigFactory.defaultReference();
-		As4MultiCertConfigProvider configProvider = new As4MultiCertConfigProvider(referenceConfig);
+		
+		Path confPath = Paths.get(this.getClass().getResource("/oxalis_home").toURI());
+		
+		As4MultiCertConfigProvider configProvider = new As4MultiCertConfigProvider(referenceConfig, confPath);
 		assertNotNull(configProvider);
-		MultiCertConfig config = configProvider.getConfig();
-		log.info("MultiCert Config: {}", config);
+		MultiCertConfigData config = configProvider.getConfigData();
+		log.info("MultiCert Config: {}", config.getMultiCertConfig());
 		assertNotNull(config);
-		List<EndpointConfig> endpoints = config.getEndpoints();
+		List<EndpointConfigData> endpoints = config.getEndpointConfigData();
 		assertNotNull(endpoints);
-		assertTrue(config.getEndpoints().size() > 0);
-		for (EndpointConfig endpoint : endpoints) {
+		assertTrue(config.getEndpointConfigData().size() > 0);
+		for (EndpointConfigData endpointData : endpoints) {
+			EndpointConfig endpoint = endpointData.getEndpointConfig();
 			assertNotNull(endpoint.getUrlPath());
 			assertNotNull(endpoint.getKeystore());
 			assertNotNull(endpoint.getKeystore().getPath());
