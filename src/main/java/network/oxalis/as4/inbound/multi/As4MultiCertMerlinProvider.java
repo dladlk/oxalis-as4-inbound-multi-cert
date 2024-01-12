@@ -7,7 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import network.oxalis.as4.common.MerlinProvider;
-import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.EndpointConfigData;
+import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
 
 @Singleton
 @com.mercell.nemhandel.as4.Rewritten(network.oxalis.as4.common.MerlinProvider.class)

@@ -12,9 +12,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import network.oxalis.as4.inbound.OxalisAS4Version;
-import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.EndpointConfig;
-import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.EndpointConfigData;
-import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.MultiCertConfigData;
+import network.oxalis.as4.inbound.multi.config.EndpointConfig;
+import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
+import network.oxalis.as4.inbound.multi.config.MultiCertConfigData;
 import network.oxalis.vefa.peppol.mode.Mode;
 
 @com.mercell.nemhandel.as4.Rewritten(network.oxalis.as4.inbound.AS4StatusServlet.class)
@@ -40,9 +40,9 @@ public class AS4MultiCertStatusServlet extends HttpServlet {
 		writer.println("version.java: " + System.getProperty("java.version"));
 		writer.println("mode: " + mode.getIdentifier());
 
-		if (this.multiCertConfigData != null && this.multiCertConfigData.getEndpointConfigData() != null) {
-			writer.println("multi.cert.endpoints.size: " + this.multiCertConfigData.getEndpointConfigData().size());
-			List<EndpointConfigData> endpoints = this.multiCertConfigData.getEndpointConfigData();
+		if (this.multiCertConfigData != null && this.multiCertConfigData.getEndpointConfigDataList() != null) {
+			writer.println("multi.cert.endpoints.size: " + this.multiCertConfigData.getEndpointConfigDataList().size());
+			List<EndpointConfigData> endpoints = this.multiCertConfigData.getEndpointConfigDataList();
 			for (int i = 0; i < endpoints.size(); i++) {
 				String prefix = "multi.cert.endpoints[" + (i + 1) + "].";
 				EndpointConfigData endpoint = endpoints.get(i);

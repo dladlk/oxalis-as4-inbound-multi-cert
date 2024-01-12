@@ -25,9 +25,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import lombok.extern.slf4j.Slf4j;
-import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.EndpointConfigData;
-import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.EndpointKeystoreConfig;
-import network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider.MultiCertConfigData;
+import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
+import network.oxalis.as4.inbound.multi.config.EndpointKeystoreConfig;
+import network.oxalis.as4.inbound.multi.config.MultiCertConfigData;
 
 @Slf4j
 @Singleton
@@ -54,10 +54,10 @@ public class As4MultiCertServlet extends CXFNonSpringServlet {
 
 		MultiCertConfigData multiCertConfigData = configProvider.getConfigData();
 		
-		log.info("Installing {} endpoints into CXF bus...", multiCertConfigData.getEndpointConfigData().size());
+		log.info("Installing {} endpoints into CXF bus...", multiCertConfigData.getEndpointConfigDataList().size());
 
-		for (int i = 0; i < multiCertConfigData.getEndpointConfigData().size(); i++) {
-			EndpointConfigData endpointConfigData = multiCertConfigData.getEndpointConfigData().get(i);
+		for (int i = 0; i < multiCertConfigData.getEndpointConfigDataList().size(); i++) {
+			EndpointConfigData endpointConfigData = multiCertConfigData.getEndpointConfigDataList().get(i);
 
 			EndpointImpl endpointImpl = endpointsPublisher.publish(getBus(), endpointConfigData.getEndpointConfig().getUrlPath());
 
