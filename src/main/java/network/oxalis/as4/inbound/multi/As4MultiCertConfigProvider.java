@@ -49,14 +49,14 @@ public class As4MultiCertConfigProvider {
 
 	@Data
 	public static class Endpoint {
-		private String path;
+		private String urlPath;
 		private EndpointKeystore keystore;
 		
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			sb.append("path=");
-			sb.append(path);
+			sb.append(urlPath);
 			sb.append(", keystore={");
 			sb.append(keystore);
 			sb.append("}");

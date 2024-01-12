@@ -29,7 +29,7 @@ public class As4MultiCertConfigProviderTest {
 		assertNotNull(endpoints);
 		assertTrue(config.getEndpoints().size() > 0);
 		for (Endpoint endpoint : endpoints) {
-			assertNotNull(endpoint.getPath());
+			assertNotNull(endpoint.getUrlPath());
 			assertNotNull(endpoint.getKeystore());
 			assertNotNull(endpoint.getKeystore().getPath());
 			assertNotNull(endpoint.getKeystore().getPassword());

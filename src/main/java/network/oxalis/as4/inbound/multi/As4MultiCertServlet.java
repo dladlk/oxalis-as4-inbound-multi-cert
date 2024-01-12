@@ -60,7 +60,7 @@ public class As4MultiCertServlet extends CXFNonSpringServlet {
 			Endpoint endpointConfig = multiCertConfig.getEndpoints().get(i);
 			EndpointKeystore endpointKeystore = endpointConfig.getKeystore();
 
-			EndpointImpl endpointImpl = endpointsPublisher.publish(getBus(), endpointConfig.getPath());
+			EndpointImpl endpointImpl = endpointsPublisher.publish(getBus(), endpointConfig.getUrlPath());
 
 			Merlin merlin = merlinProvider.getMerlin(endpointKeystore);
 

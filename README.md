@@ -26,7 +26,7 @@ oxalis.module.as4.inboundmulticert = {
 # Configure multicert
 oxalis.multicert.endpoints = [
 	{
-		path = "" #Path relative to /as4 - so "" means just "/as4" e.g. https://test.oes.dk/oxalis/as4
+		urlPath = "" #Path relative to /as4 - so "" means just "/as4" e.g. https://test.oes.dk/oxalis/as4
 		keystore {
 			path=test_certificate.jks
 			password = "XXXXXXX"
@@ -35,7 +35,7 @@ oxalis.multicert.endpoints = [
 		}
 	},
 	{
-		path = "/endpoint2" # means e.g. https://test.oes.dk/oxalis/as4/endpoint2
+		urlPath = "/endpoint2" # means e.g. https://test.oes.dk/oxalis/as4/endpoint2
 		keystore {
 			path="ned_mercell_test.p12"
 			password = "XXXXXXX"
@@ -59,8 +59,8 @@ version.oxalis.as4: 1.1.0
 version.java: 21
 mode: NEMHANDEL_TEST
 multi.cert.endpoints.size: 2
-multi.cert.endpoints[1].path: 
-multi.cert.endpoints[2].path: /endpoint2
+multi.cert.endpoints[1].urlPath: 
+multi.cert.endpoints[2].urlPath: /endpoint2
 ```
 
 # Build
