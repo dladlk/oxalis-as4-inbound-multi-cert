@@ -2,6 +2,7 @@ package network.oxalis.as4.inbound.multi;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.cert.X509Certificate;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
@@ -57,8 +58,10 @@ public class AS4MultiCertStatusServlet extends HttpServlet {
 				if (endpointConfig.getName() != null) {
 					writer.println(prefix + "name: " + endpointConfig.getName());
 				}
-				if (endpoint.getKeystoreCertificate() != null) {
-					writer.println(prefix + "certificate: " + endpoint.getKeystoreCertificate().getSubjectX500Principal().toString());
+				X509Certificate endpointCert = endpoint.getKeystoreCertificate();
+				if (endpointCert != null) {
+					writer.println(prefix + "certificate: " + endpointCert.getSubjectX500Principal().toString());
+					writer.println(prefix + "certificate.sn: " + endpointCert.getSerialNumber());
 				}
 				if (endpoint.getTruststoreFirstCertificate() != null) {
 					writer.println(prefix + "truststore.certificate: " + endpoint.getTruststoreFirstCertificate().getSubjectX500Principal().toString());
