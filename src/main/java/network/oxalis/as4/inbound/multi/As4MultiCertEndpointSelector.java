@@ -9,6 +9,7 @@ import org.apache.cxf.phase.Phase;
 import org.apache.cxf.wsdl.interceptors.AbstractEndpointSelectionInterceptor;
 
 import lombok.extern.slf4j.Slf4j;
+import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
 
 @Slf4j
 @com.mercell.nemhandel.as4.Rewritten(network.oxalis.as4.inbound.As4EndpointSelector.class)
@@ -37,7 +38,9 @@ public class As4MultiCertEndpointSelector extends AbstractEndpointSelectionInter
 			String endpointPath = (String) endpoint.get(ENDPOINT_PATH);
 			log.info("Check endpoint {}", endpointPath);
 			if (path.equals(endpointPath)) {
-				log.info("Matched endpoint {}", endpoint);
+				EndpointConfigData endpointConfigData = (EndpointConfigData) endpoint.get(As4MultiCertConstants.MULTI_CERT_ENDPOINT_CONFIG_DATA);
+				log.info("Matched endpoint {}", endpointConfigData.getEndpointConfig().getId());
+				message.put(As4MultiCertConstants.MULTI_CERT_ENDPOINT_CONFIG_DATA, endpointConfigData);
 				return endpoint;
 			}
 		}

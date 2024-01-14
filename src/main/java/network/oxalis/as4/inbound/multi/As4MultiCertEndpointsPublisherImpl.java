@@ -33,6 +33,8 @@ import network.oxalis.as4.inbound.AttachmentCleanupInterceptor;
 import network.oxalis.as4.inbound.MessagingHandler;
 import network.oxalis.as4.inbound.SetPolicyInInterceptor;
 import network.oxalis.as4.inbound.SetPolicyOutInterceptor;
+import network.oxalis.as4.inbound.multi.holder.As4MultiCertEndpointDataPostInterceptor;
+import network.oxalis.as4.inbound.multi.holder.As4MultiCertEndpointDataPreInterceptor;
 
 @Slf4j
 @com.mercell.nemhandel.as4.Rewritten(network.oxalis.as4.inbound.As4EndpointsPublisherImpl.class)
@@ -55,6 +57,12 @@ public class As4MultiCertEndpointsPublisherImpl implements As4MultiCertEndpoints
 
     @Inject
     private SetPolicyOutInterceptor setPolicyOutInterceptor;
+    
+    @Inject
+    private As4MultiCertEndpointDataPreInterceptor endpointDataPreInterceptor;
+
+    @Inject
+    private As4MultiCertEndpointDataPostInterceptor endpointDataPostInterceptor;
 
     @Override
     public EndpointImpl publish(Bus bus, String path) {
@@ -82,6 +90,9 @@ public class As4MultiCertEndpointsPublisherImpl implements As4MultiCertEndpoints
         endpoint.getOutInterceptors().add(setPolicyOutInterceptor);
         endpoint.getInFaultInterceptors().add(setPolicyInInterceptor);
         endpoint.getOutFaultInterceptors().add(setPolicyOutInterceptor);
+        
+        endpoint.getInInterceptors().add(endpointDataPreInterceptor);
+        endpoint.getInInterceptors().add(endpointDataPostInterceptor);
 
         MultipleEndpointObserver newMO = new MultipleEndpointObserver(bus) {
             @Override
