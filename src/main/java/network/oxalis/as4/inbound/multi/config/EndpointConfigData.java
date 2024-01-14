@@ -14,7 +14,23 @@ public class EndpointConfigData {
 	private EndpointConfig endpointConfig;
 	private KeyStore keystore;
 	private X509Certificate keystoreCertificate;
-	private KeyStore truststore; 
+	private KeyStore truststore;
 	private X509Certificate truststoreFirstCertificate;
 	private Mode mode;
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		if (mode != null) {
+			sb.append(mode.getIdentifier());
+		} else {
+			sb.append("null");
+		}
+		sb.append(" by ");
+		sb.append(this.endpointConfig);
+		sb.append(" on ");
+		if (keystoreCertificate != null) {
+			sb.append(keystoreCertificate.getSubjectX500Principal());
+		}
+		return sb.toString();
+	}
 }
