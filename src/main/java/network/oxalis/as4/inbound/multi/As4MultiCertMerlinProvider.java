@@ -11,7 +11,7 @@ import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
 
 @Singleton
 @com.mercell.nemhandel.as4.Rewritten(network.oxalis.as4.common.MerlinProvider.class)
-public class As4MultiCertMerlinProvider {
+public class As4MultiCertMerlinProvider extends MerlinProvider {
 
 	protected Merlin defaultMerlin;
 
@@ -24,7 +24,7 @@ public class As4MultiCertMerlinProvider {
 		Merlin merlin = new Merlin();
 		merlin.setCryptoProvider(BouncyCastleProvider.PROVIDER_NAME);
 		merlin.setKeyStore(endpointConfigData.getKeystore());
-		merlin.setTrustStore(this.defaultMerlin.getTrustStore());
+		merlin.setTrustStore(endpointConfigData.getTruststore());
 		return merlin;
 	}
 
