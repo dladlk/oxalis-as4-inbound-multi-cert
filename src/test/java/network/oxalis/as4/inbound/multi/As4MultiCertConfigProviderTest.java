@@ -1,7 +1,7 @@
 package network.oxalis.as4.inbound.multi;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -24,17 +24,21 @@ public class As4MultiCertConfigProviderTest {
 	@Test
 	public void testGetConfig() throws URISyntaxException {
 		Config referenceConfig = ConfigFactory.defaultReference();
-		
+
 		Path confPath = Paths.get(this.getClass().getResource("/oxalis_home").toURI());
-		
-		As4MultiCertConfigProvider configProvider = new As4MultiCertConfigProvider(referenceConfig, confPath);
+
+		Config localConfig = ConfigFactory.load();
+		// Exclude FRTEST and DUMMY modes to spead-up detection and omit DUMMY mode detected before PRODUCTION
+		localConfig = localConfig.withoutPath("mode.FRTEST").withoutPath("mode.DUMMY");
+
+		As4MultiCertConfigProvider configProvider = new As4MultiCertConfigProvider(referenceConfig, localConfig, confPath, null, null);
 		assertNotNull(configProvider);
 		MultiCertConfigData config = configProvider.getConfigData();
 		log.info("MultiCert Config: {}", config.getMultiCertConfig());
 		assertNotNull(config);
 		List<EndpointConfigData> endpoints = config.getEndpointConfigDataList();
 		assertNotNull(endpoints);
-		assertTrue(config.getEndpointConfigDataList().size() > 0);
+		assertEquals(3, config.getEndpointConfigDataList().size());
 		for (EndpointConfigData endpointData : endpoints) {
 			EndpointConfig endpoint = endpointData.getEndpointConfig();
 			assertNotNull(endpoint.getUrlPath());

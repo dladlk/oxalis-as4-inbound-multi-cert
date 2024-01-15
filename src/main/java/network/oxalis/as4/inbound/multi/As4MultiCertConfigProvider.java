@@ -12,7 +12,10 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -28,6 +31,8 @@ import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
 import network.oxalis.as4.inbound.multi.config.EndpointKeystoreConfig;
 import network.oxalis.as4.inbound.multi.config.MultiCertConfig;
 import network.oxalis.as4.inbound.multi.config.MultiCertConfigData;
+import network.oxalis.commons.certvalidator.api.CrlFetcher;
+import network.oxalis.pkix.ocsp.api.OcspFetcher;
 import network.oxalis.vefa.peppol.mode.Mode;
 import network.oxalis.vefa.peppol.security.ModeDetector;
 
@@ -38,26 +43,53 @@ public class As4MultiCertConfigProvider {
 	protected static final String CONFIG_PATH = "oxalis.multicert";
 	protected MultiCertConfigData configData;
 	private Path confFolderPath;
+	private Config config;
+	private OcspFetcher ocspFetcher;
+	private CrlFetcher crlFetcher;
 
 	@Inject
-	public As4MultiCertConfigProvider(Config conf, @Named("conf") Path confFolderPath) {
+	public As4MultiCertConfigProvider(Config multiCertConfig, Config modeDetectConfig, @Named("conf") Path confFolderPath, OcspFetcher ocspFetcher, CrlFetcher crlFetcher) {
+		this.config = modeDetectConfig;
 		this.confFolderPath = confFolderPath;
-		ConfigObject prefixObject = conf.getObject(CONFIG_PATH);
+		this.ocspFetcher = ocspFetcher;
+		this.crlFetcher = crlFetcher;
+		
+		ConfigObject prefixObject = config.getObject(CONFIG_PATH);
 		Config prefixConfig = prefixObject.toConfig();
-		MultiCertConfig config = ConfigBeanFactory.create(prefixConfig, MultiCertConfig.class);
-		this.configData = buildConfigData(config, this.confFolderPath);
+		MultiCertConfig multiCertConfigData = ConfigBeanFactory.create(prefixConfig, MultiCertConfig.class);
+		this.configData = buildConfigData(multiCertConfigData, this.confFolderPath);
 	}
 
-	protected MultiCertConfigData buildConfigData(MultiCertConfig config, Path confFolderPath) {
-		log.info("Loading data by MultiCertConfig config " + config);
-
+	protected MultiCertConfigData buildConfigData(MultiCertConfig multiCertConfig, Path confFolderPath) {
+		long start = System.currentTimeMillis();
+		log.info("Loading data by MultiCertConfig config data {}", multiCertConfig);
+		
+		if (log.isDebugEnabled()) {
+			Set<String> modesKeySet = config.getObject("mode").keySet();
+			log.debug("Available modes in detection order({}):", modesKeySet.size());
+			for (String token : modesKeySet) {
+				log.debug("\t- {}", token);
+			}
+		}
+		
 		MultiCertConfigData d = new MultiCertConfigData();
-		d.setMultiCertConfig(config);
+		d.setMultiCertConfig(multiCertConfig);
+		
+		// This logic is copied from network.oxalis.commons.mode.ModeProvider.get()
+        Map<String, Object> modeDetectionObjectStorage = new HashMap<>();
+        if (ocspFetcher != null) {
+        	modeDetectionObjectStorage.put("ocsp_fetcher", ocspFetcher);
+        }
+        if (crlFetcher != null) {
+        	modeDetectionObjectStorage.put("crlFetcher", crlFetcher);
+        }
 
 		d.setEndpointConfigDataList(new ArrayList<>());
-		for (EndpointConfig endpointConfig : config.getEndpoints()) {
+		for (EndpointConfig endpointConfig : multiCertConfig.getEndpoints()) {
 			EndpointConfigData ed = new EndpointConfigData();
 			ed.setEndpointConfig(endpointConfig);
+
+			log.info("Building config data by config {}", endpointConfig);
 
 			EndpointKeystoreConfig keystoreConf = endpointConfig.getKeystore();
 			ed.setKeystore(loadKeyStore(keystoreConf, confFolderPath));
@@ -71,12 +103,13 @@ public class As4MultiCertConfigProvider {
 				continue;
 			}
 
+			log.info("Detect mode for certificate {}", ed.getKeystoreCertificate().getSubjectX500Principal());
 			Mode mode;
 			try {
-				mode = ModeDetector.detect(ed.getKeystoreCertificate());
+				mode = ModeDetector.detect(ed.getKeystoreCertificate(), config, modeDetectionObjectStorage);
 				ed.setMode(mode);
 			} catch (Exception e) {
-				log.error("Cannot detect mode by certificate " + ed.getKeystoreCertificate().getSubjectX500Principal() + " from keystore by path " + keystoreConf.getPath() + " and alias " + keystoreConf.getKey().getAlias() + ", skip endpoint configuration for " + ed.getEndpointConfig());
+				log.error("Cannot detect mode by certificate " + ed.getKeystoreCertificate().getSubjectX500Principal() + " from keystore by path " + keystoreConf.getPath() + " and alias " + keystoreConf.getKey().getAlias() + ", skip endpoint configuration for " + ed.getEndpointConfig(), e);
 				continue;
 			}
 
@@ -106,7 +139,7 @@ public class As4MultiCertConfigProvider {
 			}
 			d.getEndpointConfigDataList().add(ed);
 		}
-		log.info("Loaded " + d.getEndpointConfigDataList().size() + " endpoints");
+		log.info("Loaded {} endpoints in {} ms", d.getEndpointConfigDataList().size(), System.currentTimeMillis() - start);
 		return d;
 	}
 

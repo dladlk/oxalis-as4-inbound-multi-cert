@@ -25,7 +25,9 @@
     
     <logger name="org.testng" level="warn"/>
     <logger name="network.oxalis.commons.settings.SettingsBuilder" level="warn"/>
-    <logger name="network.oxalis.outbound.transmission.MessageSenderFactory" level="warn"/>
+    
+    <!-- See available modes during detection -->
+    <logger name="network.oxalis.as4.inbound.multi.As4MultiCertConfigProvider" level="debug"/>
 
     <root level="info">
         <appender-ref ref="STDOUT"/>
