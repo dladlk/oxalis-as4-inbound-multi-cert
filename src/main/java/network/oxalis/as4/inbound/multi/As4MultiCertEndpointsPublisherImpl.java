@@ -67,7 +67,7 @@ public class As4MultiCertEndpointsPublisherImpl implements As4MultiCertEndpoints
     @Override
     public EndpointImpl publish(Bus bus, String path) {
     	
-    	log.info("Publish endpoint on path \'{}\'", path);
+    	log.info("Publish endpoint on path \'{}{}\'", As4MultiCertInboundModule.PUBLISHED_ENDPOINT_PREFIX, path);
     	
         EndpointImpl endpoint = (EndpointImpl) Endpoint.publish(path, as4Provider,
                 new LoggingFeature(),

@@ -16,24 +16,26 @@ import network.oxalis.as4.inbound.As4Provider;
 @com.mercell.nemhandel.as4.Rewritten(network.oxalis.as4.inbound.As4InboundModule.class)
 public class As4MultiCertInboundModule extends ServletModule {
 
-    private static final String OXALIS_AS4_MULTICERT = "oxalis-as4-multicert";
+	private static final String OXALIS_AS4_MULTICERT = "oxalis-as4-multicert";
+
+	public static final String PUBLISHED_ENDPOINT_PREFIX = "/as4";
 
 	@Override
-    protected void configureServlets() {
-    	log.info("Installing AS4 MultiCertConfig Inbound module...");
-    	
-        bind(AbstractEndpointSelectionInterceptor.class).to(As4MultiCertEndpointSelector.class);
+	protected void configureServlets() {
+		log.info("Installing AS4 MultiCertConfig Inbound module...");
 
-        bind(Key.get(HttpServlet.class, Names.named(OXALIS_AS4_MULTICERT)))
-                .to(As4MultiCertServlet.class)
-                .asEagerSingleton();
+		bind(AbstractEndpointSelectionInterceptor.class).to(As4MultiCertEndpointSelector.class);
 
-        bind(As4Provider.class);
-        bind(As4MultiCertEndpointsPublisher.class).to(As4MultiCertEndpointsPublisherImpl.class);
-        bind(As4InboundHandler.class);
+		bind(Key.get(HttpServlet.class, Names.named(OXALIS_AS4_MULTICERT)))
+				.to(As4MultiCertServlet.class)
+				.asEagerSingleton();
 
-        serve("/as4/status").with(AS4MultiCertStatusServlet.class);
-        serve("/as4*").with(Key.get(HttpServlet.class, Names.named(OXALIS_AS4_MULTICERT)));
-    }
+		bind(As4Provider.class);
+		bind(As4MultiCertEndpointsPublisher.class).to(As4MultiCertEndpointsPublisherImpl.class);
+		bind(As4InboundHandler.class);
+
+		serve(PUBLISHED_ENDPOINT_PREFIX + "/status").with(AS4MultiCertStatusServlet.class);
+		serve(PUBLISHED_ENDPOINT_PREFIX + "*").with(Key.get(HttpServlet.class, Names.named(OXALIS_AS4_MULTICERT)));
+	}
 
 }
