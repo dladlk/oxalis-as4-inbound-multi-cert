@@ -13,6 +13,7 @@ public class As4MultiCertEndpointDataPostInterceptor extends AbstractSoapInterce
 
 	@Inject
 	public As4MultiCertEndpointDataPostInterceptor() {
+		// TODO: Ensure that it is called in case of Fault too!
 		super(Phase.POST_INVOKE);
 	}
 
