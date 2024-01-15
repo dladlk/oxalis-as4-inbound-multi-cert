@@ -54,7 +54,7 @@ public class As4MultiCertConfigProvider {
 		this.ocspFetcher = ocspFetcher;
 		this.crlFetcher = crlFetcher;
 		
-		ConfigObject prefixObject = config.getObject(CONFIG_PATH);
+		ConfigObject prefixObject = multiCertConfig.getObject(CONFIG_PATH);
 		Config prefixConfig = prefixObject.toConfig();
 		MultiCertConfig multiCertConfigData = ConfigBeanFactory.create(prefixConfig, MultiCertConfig.class);
 		this.configData = buildConfigData(multiCertConfigData, this.confFolderPath);
