@@ -53,18 +53,20 @@ public class As4MultiCertServlet extends CXFNonSpringServlet {
 		this.bus = BusFactory.getThreadDefaultBus();
 
 		MultiCertConfigData multiCertConfigData = configProvider.getConfigData();
-		
+
 		log.info("Installing {} endpoints into CXF bus...", multiCertConfigData.getEndpointConfigDataList().size());
 
 		for (int i = 0; i < multiCertConfigData.getEndpointConfigDataList().size(); i++) {
 			EndpointConfigData endpointConfigData = multiCertConfigData.getEndpointConfigDataList().get(i);
 
-			EndpointImpl endpointImpl = endpointsPublisher.publish(getBus(), endpointConfigData.getEndpointConfig().getUrlPath());
+			String urlSuffix = endpointConfigData.getEndpointConfig().getUrlPath();
+			log.info("Publish endpoint on path \'{}{}\' in mode {}", As4MultiCertInboundModule.PUBLISHED_ENDPOINT_PREFIX, urlSuffix, endpointConfigData.getMode().getIdentifier());
+			EndpointImpl endpointImpl = endpointsPublisher.publish(getBus(), urlSuffix);
 
 			endpointImpl.getProperties().put(As4MultiCertConstants.MULTI_CERT_ENDPOINT_CONFIG_DATA, endpointConfigData);
-			
+
 			Merlin merlin = merlinProvider.getMerlin(endpointConfigData);
-			
+
 			EndpointKeystoreConfig keystoreConfig = endpointConfigData.getEndpointConfig().getKeystore();
 
 			endpointImpl.getProperties().put(SIGNATURE_CRYPTO, merlin);
@@ -81,13 +83,13 @@ public class As4MultiCertServlet extends CXFNonSpringServlet {
 		}
 	}
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        try {
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write("Hello AS4 world\n");
-        } catch (IOException e) {
-            throw new ServletException("Unable to send response", e);
-        }
-    }
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		try {
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.getWriter().write("Hello AS4 world\n");
+		} catch (IOException e) {
+			throw new ServletException("Unable to send response", e);
+		}
+	}
 }
