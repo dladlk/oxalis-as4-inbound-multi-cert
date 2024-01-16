@@ -25,21 +25,20 @@ public class As4MultiCertEndpointSelector extends AbstractEndpointSelectionInter
 	@Override
 	protected Endpoint selectEndpoint(Message message, Set<Endpoint> endpoints) {
 		String messageUri = (String) message.get("org.apache.cxf.request.uri");
-		log.info("Searching for matching endpoint for message by uri {} among {} registered endpoints", messageUri, endpoints.size());
+		log.debug("Searching for matching endpoint for message by uri {} among {} registered endpoints", messageUri, endpoints.size());
 		
-		log.info("Message class: {}", message.getClass());
-		log.info("Full uri: {}", messageUri);
+		log.debug("Full uri: {}", messageUri);
 		if (messageUri.startsWith("/as4")) {
 			messageUri = messageUri.substring("/as4".length());
 		}
-		log.info("Match endpoint by uri {}", messageUri.length() == 0 ? "DEFAULT" : messageUri);
+		log.debug("Match endpoint by uri {}", messageUri.length() == 0 ? "DEFAULT" : messageUri);
 		String path = messageUri;
 		for (Endpoint endpoint : endpoints) {
 			String endpointPath = (String) endpoint.get(ENDPOINT_PATH);
-			log.info("Check endpoint {}", endpointPath);
+			log.debug("Check endpoint {}", endpointPath);
 			if (path.equals(endpointPath)) {
 				EndpointConfigData endpointConfigData = (EndpointConfigData) endpoint.get(As4MultiCertConstants.MULTI_CERT_ENDPOINT_CONFIG_DATA);
-				log.info("Matched endpoint {}", endpointConfigData.getEndpointConfig().getId());
+				log.debug("Matched endpoint {}", endpointConfigData.getEndpointConfig().getId());
 				message.put(As4MultiCertConstants.MULTI_CERT_ENDPOINT_CONFIG_DATA, endpointConfigData);
 				return endpoint;
 			}
