@@ -47,7 +47,7 @@ public class AS4MultiCertStatusServlet extends HttpServlet {
 			List<EndpointConfigData> endpoints = this.multiCertConfigData.getEndpointConfigDataList();
 			for (int i = 0; i < endpoints.size(); i++) {
 				writer.println("");
-				String prefix = "multi.cert.endpoints[" + (i + 1) + "].";
+				String prefix = "multi.cert.endpoints[" + i + "].";
 				EndpointConfigData endpoint = endpoints.get(i);
 				EndpointConfig endpointConfig = endpoint.getEndpointConfig();
 				writer.println(prefix + "path: " + As4MultiCertInboundModule.PUBLISHED_ENDPOINT_PREFIX + endpointConfig.getUrlPath());
