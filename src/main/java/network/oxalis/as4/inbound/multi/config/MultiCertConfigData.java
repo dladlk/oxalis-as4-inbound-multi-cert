@@ -29,4 +29,17 @@ public class MultiCertConfigData {
 		}
 		return EMPTY;
 	}
+
+	public EndpointConfigData getEndpointConfigDataByURLPath(String urlPath) {
+		if (urlPath != null && this.endpointConfigDataList != null && !this.endpointConfigDataList.isEmpty()) {
+			// TODO: Instead of iterator, use hash map to get data
+			for (EndpointConfigData endpointConfigData : endpointConfigDataList) {
+				if (urlPath.equals(endpointConfigData.getEndpointConfig().getUrlPath())) {
+					return endpointConfigData;
+				}
+			}
+		}
+		return null;
+	}
+	
 }
