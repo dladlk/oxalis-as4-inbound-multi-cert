@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class MultiCertConfig {
+	
 	private List<EndpointConfig> endpoints;
 
 	@Override
