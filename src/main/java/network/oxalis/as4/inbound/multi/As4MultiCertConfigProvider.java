@@ -54,10 +54,16 @@ public class As4MultiCertConfigProvider {
 		this.ocspFetcher = ocspFetcher;
 		this.crlFetcher = crlFetcher;
 		
-		ConfigObject prefixObject = multiCertConfig.getObject(CONFIG_PATH);
-		Config prefixConfig = prefixObject.toConfig();
-		MultiCertConfig multiCertConfigData = ConfigBeanFactory.create(prefixConfig, MultiCertConfig.class);
-		this.configData = buildConfigData(multiCertConfigData, this.confFolderPath);
+		// Make it possible to inject As4MultiCertConfigProvider even if nothing is configured
+		if (multiCertConfig.hasPath(CONFIG_PATH)) {
+			ConfigObject prefixObject = multiCertConfig.getObject(CONFIG_PATH);
+			Config prefixConfig = prefixObject.toConfig();
+			MultiCertConfig multiCertConfigData = ConfigBeanFactory.create(prefixConfig, MultiCertConfig.class);
+			this.configData = buildConfigData(multiCertConfigData, this.confFolderPath);
+		} else {
+			log.info("No MultiCertConfig is configured on key {}", CONFIG_PATH);
+			this.configData = MultiCertConfigData.empty();
+		}
 	}
 
 	protected MultiCertConfigData buildConfigData(MultiCertConfig multiCertConfig, Path confFolderPath) {
