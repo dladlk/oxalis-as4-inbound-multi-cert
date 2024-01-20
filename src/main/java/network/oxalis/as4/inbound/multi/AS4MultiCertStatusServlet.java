@@ -3,6 +3,7 @@ package network.oxalis.as4.inbound.multi;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.List;
 
 import javax.servlet.http.HttpServlet;
@@ -36,6 +37,11 @@ public class AS4MultiCertStatusServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		resp.setContentType("text/plain");
 
+		boolean includeBase64 = false;
+		if (req.getParameter("base64") != null) {
+			includeBase64 = true;
+		}
+
 		PrintWriter writer = resp.getWriter();
 		writer.println("version.oxalis.as4: " + OxalisAS4Version.getVersion());
 		writer.println("version.java: " + System.getProperty("java.version"));
@@ -62,6 +68,12 @@ public class AS4MultiCertStatusServlet extends HttpServlet {
 				if (endpointCert != null) {
 					writer.println(prefix + "certificate: " + endpointCert.getSubjectX500Principal().toString());
 					writer.println(prefix + "certificate.sn: " + endpointCert.getSerialNumber());
+					if (includeBase64) {
+						try {
+							writer.println(prefix + "certificate.base64: " + Base64.getEncoder().encodeToString(endpointCert.getEncoded()));
+						} catch (Exception e) {
+						}
+					}
 				}
 				if (endpoint.getTruststoreFirstCertificate() != null) {
 					writer.println(prefix + "truststore.certificate: " + endpoint.getTruststoreFirstCertificate().getSubjectX500Principal().toString());
