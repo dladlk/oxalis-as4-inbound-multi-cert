@@ -21,6 +21,9 @@ public class As4MultiCertMerlinProvider extends MerlinProvider {
 	}
 
 	public Merlin getMerlin(EndpointConfigData endpointConfigData) {
+		if (endpointConfigData == null) {
+			return super.getMerlin();
+		}
 		Merlin merlin = new Merlin();
 		merlin.setCryptoProvider(BouncyCastleProvider.PROVIDER_NAME);
 		merlin.setKeyStore(endpointConfigData.getKeystore());
