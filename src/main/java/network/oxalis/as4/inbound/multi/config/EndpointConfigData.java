@@ -4,6 +4,7 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
 import lombok.Getter;
+import network.oxalis.as4.inbound.multi.cert.CertificateOwnerExtractor;
 import network.oxalis.vefa.peppol.mode.Mode;
 
 /**
@@ -23,6 +24,7 @@ public class EndpointConfigData {
 	protected KeyStore keystore;
 	protected X509Certificate keystoreCertificate;
 	protected String keystoreCertificateCode;
+	protected String keystoreCertificateOwner;
 	protected KeyStore truststore;
 	protected X509Certificate truststoreFirstCertificate;
 	protected Mode mode;
@@ -43,6 +45,9 @@ public class EndpointConfigData {
 		}
 		this.keystore = keystore;
 		this.keystoreCertificate = keystoreCertificate;
+		if (keystoreCertificate != null) {
+			this.keystoreCertificateOwner = CertificateOwnerExtractor.extract(keystoreCertificate);
+		}
 		this.keystoreCertificateCode = keystoreCertificateCode;
 		this.truststore = truststore;
 		this.truststoreFirstCertificate = truststoreFirstCertificate;
@@ -62,6 +67,8 @@ public class EndpointConfigData {
 		}
 		sb.append(" for ");
 		sb.append(keystoreCertificateCode);
+		sb.append(" of ");
+		sb.append(keystoreCertificateOwner);
 		return sb.toString();
 	}
 

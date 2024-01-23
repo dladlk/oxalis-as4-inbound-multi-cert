@@ -67,6 +67,7 @@ public class AS4MultiCertStatusServlet extends HttpServlet {
 					writer.println(prefix + "certificate: " + endpointCert.getSubjectX500Principal().toString());
 					writer.println(prefix + "certificate.sn: " + endpointCert.getSerialNumber());
 					writer.println(prefix + "certificate.code: " + endpoint.getKeystoreCertificateCode());
+					writer.println(prefix + "certificate.owner: " + endpoint.getKeystoreCertificateOwner());
 					if (includeBase64) {
 						try {
 							writer.println(prefix + "certificate.base64: " + Base64.getEncoder().encodeToString(endpointCert.getEncoded()));
