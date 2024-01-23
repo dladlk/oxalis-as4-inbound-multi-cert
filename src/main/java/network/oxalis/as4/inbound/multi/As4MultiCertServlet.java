@@ -7,6 +7,7 @@ import static org.apache.cxf.rt.security.SecurityConstants.SIGNATURE_PASSWORD;
 import static org.apache.cxf.rt.security.SecurityConstants.SIGNATURE_USERNAME;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -26,7 +27,6 @@ import com.google.inject.Singleton;
 
 import lombok.extern.slf4j.Slf4j;
 import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
-import network.oxalis.as4.inbound.multi.config.EndpointKeystoreConfig;
 import network.oxalis.as4.inbound.multi.config.MultiCertConfigData;
 
 @Slf4j
@@ -54,12 +54,13 @@ public class As4MultiCertServlet extends CXFNonSpringServlet {
 
 		MultiCertConfigData multiCertConfigData = configProvider.getConfigData();
 
-		log.info("Installing {} endpoints into CXF bus...", multiCertConfigData.getEndpointConfigDataList().size());
+		log.info("Installing {} endpoints into CXF bus...", multiCertConfigData.getEndpointListSize());
 
-		for (int i = 0; i < multiCertConfigData.getEndpointConfigDataList().size(); i++) {
-			EndpointConfigData endpointConfigData = multiCertConfigData.getEndpointConfigDataList().get(i);
+		List<EndpointConfigData> endpointList = multiCertConfigData.getEndpointList();
+		for (int i = 0; i < endpointList.size(); i++) {
+			EndpointConfigData endpointConfigData = endpointList.get(i);
 
-			String urlSuffix = endpointConfigData.getEndpointConfig().getUrlPath();
+			String urlSuffix = endpointConfigData.getEndpointUrlPath();
 			log.info("Publish endpoint on path \'{}{}\' in mode {}", As4MultiCertInboundModule.PUBLISHED_ENDPOINT_PREFIX, urlSuffix, endpointConfigData.getMode().getIdentifier());
 			EndpointImpl endpointImpl = endpointsPublisher.publish(getBus(), urlSuffix);
 
@@ -67,14 +68,12 @@ public class As4MultiCertServlet extends CXFNonSpringServlet {
 
 			Merlin merlin = merlinProvider.getMerlin(endpointConfigData);
 
-			EndpointKeystoreConfig keystoreConfig = endpointConfigData.getEndpointConfig().getKeystore();
-
 			endpointImpl.getProperties().put(SIGNATURE_CRYPTO, merlin);
-			endpointImpl.getProperties().put(SIGNATURE_PASSWORD, keystoreConfig.getKey().getPassword());
-			endpointImpl.getProperties().put(SIGNATURE_USERNAME, keystoreConfig.getKey().getAlias());
+			endpointImpl.getProperties().put(SIGNATURE_PASSWORD, endpointConfigData.getKeystoreKeyPassword());
+			endpointImpl.getProperties().put(SIGNATURE_USERNAME, endpointConfigData.getKeystoreKeyAlias());
 
 			endpointImpl.getProperties().put(ENCRYPT_CRYPTO, merlin);
-			endpointImpl.getProperties().put(ENCRYPT_USERNAME, keystoreConfig.getKey().getAlias());
+			endpointImpl.getProperties().put(ENCRYPT_USERNAME, endpointConfigData.getKeystoreKeyAlias());
 
 			endpointImpl.getInInterceptors().add(new PolicyBasedWSS4JInInterceptor());
 			endpointImpl.getOutInterceptors().add(new PolicyBasedWSS4JOutInterceptor());

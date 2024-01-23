@@ -38,7 +38,7 @@ public class As4MultiCertEndpointSelector extends AbstractEndpointSelectionInter
 			log.debug("Check endpoint {}", endpointPath);
 			if (path.equals(endpointPath)) {
 				EndpointConfigData endpointConfigData = (EndpointConfigData) endpoint.get(As4MultiCertConstants.MULTI_CERT_ENDPOINT_CONFIG_DATA);
-				log.debug("Matched endpoint {}", endpointConfigData.getEndpointConfig().getId());
+				log.debug("Matched endpoint {}", endpointConfigData.getEndpointId());
 				message.put(As4MultiCertConstants.MULTI_CERT_ENDPOINT_CONFIG_DATA, endpointConfigData);
 				return endpoint;
 			}

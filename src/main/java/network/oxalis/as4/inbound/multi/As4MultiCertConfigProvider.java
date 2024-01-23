@@ -9,7 +9,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -26,6 +25,7 @@ import com.typesafe.config.ConfigObject;
 
 import lombok.extern.slf4j.Slf4j;
 import network.oxalis.api.lang.OxalisLoadingException;
+import network.oxalis.as4.inbound.multi.cert.CertificateCodeExtractor;
 import network.oxalis.as4.inbound.multi.config.EndpointConfig;
 import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
 import network.oxalis.as4.inbound.multi.config.EndpointKeystoreConfig;
@@ -33,6 +33,7 @@ import network.oxalis.as4.inbound.multi.config.MultiCertConfig;
 import network.oxalis.as4.inbound.multi.config.MultiCertConfigData;
 import network.oxalis.commons.certvalidator.api.CrlFetcher;
 import network.oxalis.pkix.ocsp.api.OcspFetcher;
+import network.oxalis.vefa.peppol.common.lang.PeppolLoadingException;
 import network.oxalis.vefa.peppol.mode.Mode;
 import network.oxalis.vefa.peppol.security.ModeDetector;
 
@@ -42,17 +43,19 @@ public class As4MultiCertConfigProvider {
 
 	protected static final String CONFIG_PATH = "oxalis.multicert";
 	protected MultiCertConfigData configData;
-	private Path confFolderPath;
-	private Config config;
-	private OcspFetcher ocspFetcher;
-	private CrlFetcher crlFetcher;
+	protected Path confFolderPath;
+	protected Config config;
+	protected OcspFetcher ocspFetcher;
+	protected CrlFetcher crlFetcher;
+	protected CertificateCodeExtractor certificateCodeExtractor;
 
 	@Inject
-	public As4MultiCertConfigProvider(Config multiCertConfig, Config modeDetectConfig, @Named("conf") Path confFolderPath, OcspFetcher ocspFetcher, CrlFetcher crlFetcher) {
+	public As4MultiCertConfigProvider(Config multiCertConfig, Config modeDetectConfig, @Named("conf") Path confFolderPath, OcspFetcher ocspFetcher, CrlFetcher crlFetcher, CertificateCodeExtractor certificateCodeExtractor) {
 		this.config = modeDetectConfig;
 		this.confFolderPath = confFolderPath;
 		this.ocspFetcher = ocspFetcher;
 		this.crlFetcher = crlFetcher;
+		this.certificateCodeExtractor = certificateCodeExtractor;
 		
 		// Make it possible to inject As4MultiCertConfigProvider even if nothing is configured
 		if (multiCertConfig.hasPath(CONFIG_PATH)) {
@@ -79,7 +82,6 @@ public class As4MultiCertConfigProvider {
 		}
 		
 		MultiCertConfigData d = new MultiCertConfigData();
-		d.setMultiCertConfig(multiCertConfig);
 		
 		// This logic is copied from network.oxalis.commons.mode.ModeProvider.get()
         Map<String, Object> modeDetectionObjectStorage = new HashMap<>();
@@ -90,63 +92,114 @@ public class As4MultiCertConfigProvider {
         	modeDetectionObjectStorage.put("crlFetcher", crlFetcher);
         }
 
-		d.setEndpointConfigDataList(new ArrayList<>());
 		for (EndpointConfig endpointConfig : multiCertConfig.getEndpoints()) {
-			EndpointConfigData ed = new EndpointConfigData();
-			ed.setEndpointConfig(endpointConfig);
-
 			log.info("Building config data by config {}", endpointConfig);
+			
+			if (!isValidConfig(endpointConfig)) {
+				log.warn("Skip endpoint configuration {} as invalid", endpointConfig);
+				continue;
+			}
 
 			EndpointKeystoreConfig keystoreConf = endpointConfig.getKeystore();
-			ed.setKeystore(loadKeyStore(keystoreConf, confFolderPath));
+			KeyStore keyStore = loadKeyStore(keystoreConf, confFolderPath);
 
 			String keyAlias = keystoreConf.getKey().getAlias();
+			X509Certificate keystoreCertificate;
 			try {
-				X509Certificate certificate = (X509Certificate) ed.getKeystore().getCertificate(keyAlias);
-				ed.setKeystoreCertificate(certificate);
+				keystoreCertificate = (X509Certificate) keyStore.getCertificate(keyAlias);
 			} catch (Exception e) {
-				log.error("Cannot find certificate by alias '" + keyAlias + "' in keystore by path " + keystoreConf.getPath() + ", skip endpoint configuration for " + ed.getEndpointConfig(), e);
+				log.error("Cannot find certificate by alias '" + keyAlias + "' in keystore by path " + keystoreConf.getPath() + ", skip endpoint configuration for " + endpointConfig, e);
 				continue;
 			}
+			
+			String keystoreCertificateCode = null;
+			if (keystoreCertificate != null) {
+				keystoreCertificateCode = certificateCodeExtractor.extract(keystoreCertificate);
+			}
 
-			log.info("Detect mode for certificate {}", ed.getKeystoreCertificate().getSubjectX500Principal());
 			Mode mode;
 			try {
-				mode = ModeDetector.detect(ed.getKeystoreCertificate(), config, modeDetectionObjectStorage);
-				ed.setMode(mode);
+				mode = loadMode(modeDetectionObjectStorage, keystoreCertificate);
 			} catch (Exception e) {
-				log.error("Cannot detect mode by certificate " + ed.getKeystoreCertificate().getSubjectX500Principal() + " from keystore by path " + keystoreConf.getPath() + " and alias " + keystoreConf.getKey().getAlias() + ", skip endpoint configuration for " + ed.getEndpointConfig(), e);
+				log.error("Cannot detect mode by certificate " + keystoreCertificate.getSubjectX500Principal() + " from keystore by path " + keystoreConf.getPath() + " and alias " + keystoreConf.getKey().getAlias() + ", skip endpoint configuration for " + endpointConfig, e);
 				continue;
 			}
 
-			ed.setTruststore(loadTrustStoreApFromConf(ed.getMode(), confFolderPath).orElse(null));
-			if (ed.getTruststore() != null) {
-				try {
-					StringBuilder sb = new StringBuilder();
-					Enumeration<String> aliases = ed.getTruststore().aliases();
-					while (aliases.hasMoreElements()) {
-						String anyAlias = aliases.nextElement();
-						if (sb.length() > 0) {
-							sb.append(", ");
-						}
-						sb.append(anyAlias);
-						X509Certificate certificate = (X509Certificate) ed.getTruststore().getCertificate(anyAlias);
-						if (certificate != null) {
-							ed.setTruststoreFirstCertificate(certificate);
-							break;
-						}
-					}
-					if (ed.getTruststoreFirstCertificate() == null) {
-						log.warn("No certificate was loaded in truststore of mode " + mode.getIdentifier() + ", scanned next aliases: " + sb.toString());
-					}
-				} catch (Exception e) {
-					log.warn("Failed to extract any certificate from truststore in mode " + mode.getIdentifier(), e);
-				}
-			}
-			d.getEndpointConfigDataList().add(ed);
+			KeyStore truststore = loadTrustStoreApFromConf(mode, confFolderPath).orElse(null);
+			X509Certificate truststoreFirstCertificate = loadTruststoreFirstCertificate(mode, truststore);
+			d.add(EndpointConfigData.of(endpointConfig, keyStore, keystoreCertificate, keystoreCertificateCode, truststore, truststoreFirstCertificate, mode));
 		}
-		log.info("Loaded {} endpoints in {} ms", d.getEndpointConfigDataList().size(), System.currentTimeMillis() - start);
+		log.info("Loaded {} endpoints in {} ms", d.getEndpointListSize(), System.currentTimeMillis() - start);
 		return d;
+	}
+
+	protected boolean isValidConfig(EndpointConfig ec) {
+		if (ec == null) {
+			log.warn("Passed EndpoingConfig is null");
+			return false;
+		}
+		if (ec.getUrlPath() == null) {
+			log.warn("UrlPath is null at config {}", ec);
+			return false;
+		}
+		if (ec.getKeystore() == null) {
+			log.warn("Keystore config is null at config {}", ec);
+			return false;
+		}
+		if (ec.getKeystore().getKey() == null) {
+			log.warn("Keystore key config is null at config {}", ec);
+			return false;
+		}
+		if (ec.getKeystore().getPassword() == null) {
+			log.warn("Keystore password is null at config {}", ec);
+			return false;
+		}
+		if (ec.getKeystore().getPath() == null) {
+			log.warn("Keystore path is null at config {}", ec);
+			return false;
+		}
+		if (ec.getKeystore().getKey().getPassword() == null) {
+			log.warn("Keystore key password is null at config {}", ec);
+			return false;
+		}
+		if (ec.getKeystore().getKey().getAlias() == null) {
+			log.warn("Keystore key alias is null at config {}", ec);
+			return false;
+		}
+		return true;
+	}
+
+	protected Mode loadMode(Map<String, Object> modeDetectionObjectStorage, X509Certificate keystoreCertificate) throws PeppolLoadingException {
+		log.info("Detect mode for certificate {}", keystoreCertificate.getSubjectX500Principal());
+		return ModeDetector.detect(keystoreCertificate, config, modeDetectionObjectStorage);
+	}
+
+	protected X509Certificate loadTruststoreFirstCertificate(Mode mode, KeyStore truststore) {
+		X509Certificate truststoreFirstCertificate = null;
+		if (truststore != null) {
+			try {
+				StringBuilder sb = new StringBuilder();
+				Enumeration<String> aliases = truststore.aliases();
+				while (aliases.hasMoreElements()) {
+					String anyAlias = aliases.nextElement();
+					if (sb.length() > 0) {
+						sb.append(", ");
+					}
+					sb.append(anyAlias);
+					X509Certificate certificate = (X509Certificate) truststore.getCertificate(anyAlias);
+					if (certificate != null) {
+						truststoreFirstCertificate = certificate;
+						break;
+					}
+				}
+				if (truststoreFirstCertificate == null) {
+					log.warn("No certificate was loaded in truststore of mode " + mode.getIdentifier() + ", scanned next aliases: " + sb.toString());
+				}
+			} catch (Exception e) {
+				log.warn("Failed to extract any certificate from truststore in mode " + mode.getIdentifier(), e);
+			}
+		}
+		return truststoreFirstCertificate;
 	}
 
 	public MultiCertConfigData getConfigData() {

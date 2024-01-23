@@ -14,7 +14,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import network.oxalis.as4.inbound.OxalisAS4Version;
-import network.oxalis.as4.inbound.multi.config.EndpointConfig;
 import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
 import network.oxalis.as4.inbound.multi.config.MultiCertConfigData;
 import network.oxalis.vefa.peppol.mode.Mode;
@@ -47,27 +46,27 @@ public class AS4MultiCertStatusServlet extends HttpServlet {
 		writer.println("version.java: " + System.getProperty("java.version"));
 		writer.println("mode: " + mode.getIdentifier());
 
-		if (this.multiCertConfigData != null && this.multiCertConfigData.getEndpointConfigDataList() != null) {
+		if (this.multiCertConfigData != null && this.multiCertConfigData.getEndpointListSize() > 0) {
 			writer.println("");
-			writer.println("multi.cert.endpoints.size: " + this.multiCertConfigData.getEndpointConfigDataList().size());
-			List<EndpointConfigData> endpoints = this.multiCertConfigData.getEndpointConfigDataList();
+			writer.println("multi.cert.endpoints.size: " + this.multiCertConfigData.getEndpointListSize());
+			List<EndpointConfigData> endpoints = this.multiCertConfigData.getEndpointList();
 			for (int i = 0; i < endpoints.size(); i++) {
 				writer.println("");
 				String prefix = "multi.cert.endpoints[" + i + "].";
 				EndpointConfigData endpoint = endpoints.get(i);
-				EndpointConfig endpointConfig = endpoint.getEndpointConfig();
-				writer.println(prefix + "path: " + As4MultiCertInboundModule.PUBLISHED_ENDPOINT_PREFIX + endpointConfig.getUrlPath());
+				writer.println(prefix + "path: " + As4MultiCertInboundModule.PUBLISHED_ENDPOINT_PREFIX + endpoint.getEndpointUrlPath());
 				writer.println(prefix + "mode: " + endpoint.getMode().getIdentifier());
-				if (endpointConfig.getId() != null) {
-					writer.println(prefix + "id: " + endpointConfig.getId());
+				if (endpoint.getEndpointId() != null) {
+					writer.println(prefix + "id: " + endpoint.getEndpointId());
 				}
-				if (endpointConfig.getName() != null) {
-					writer.println(prefix + "name: " + endpointConfig.getName());
+				if (endpoint.getEndpointName() != null) {
+					writer.println(prefix + "name: " + endpoint.getEndpointName());
 				}
 				X509Certificate endpointCert = endpoint.getKeystoreCertificate();
 				if (endpointCert != null) {
 					writer.println(prefix + "certificate: " + endpointCert.getSubjectX500Principal().toString());
 					writer.println(prefix + "certificate.sn: " + endpointCert.getSerialNumber());
+					writer.println(prefix + "certificate.code: " + endpoint.getKeystoreCertificateCode());
 					if (includeBase64) {
 						try {
 							writer.println(prefix + "certificate.base64: " + Base64.getEncoder().encodeToString(endpointCert.getEncoded()));

@@ -3,20 +3,55 @@ package network.oxalis.as4.inbound.multi.config;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
-import lombok.Data;
+import lombok.Getter;
 import network.oxalis.vefa.peppol.mode.Mode;
 
 /**
  * Data class with resolved fields by config
  */
-@Data
+@Getter
 public class EndpointConfigData {
-	private EndpointConfig endpointConfig;
-	private KeyStore keystore;
-	private X509Certificate keystoreCertificate;
-	private KeyStore truststore;
-	private X509Certificate truststoreFirstCertificate;
-	private Mode mode;
+
+	protected String endpointId;
+	protected String endpointName;
+	protected String endpointUrlPath;
+	protected String keystorePath;
+	protected String keystorePassword;
+	protected String keystoreKeyAlias;
+	protected String keystoreKeyPassword;
+	
+	protected KeyStore keystore;
+	protected X509Certificate keystoreCertificate;
+	protected String keystoreCertificateCode;
+	protected KeyStore truststore;
+	protected X509Certificate truststoreFirstCertificate;
+	protected Mode mode;
+
+	protected EndpointConfigData(EndpointConfig endpointConfig, KeyStore keystore, X509Certificate keystoreCertificate, String keystoreCertificateCode, KeyStore truststore, X509Certificate truststoreFirstCertificate, Mode mode) {
+		if (endpointConfig != null) {
+			this.endpointId = endpointConfig.getId();
+			this.endpointName = endpointConfig.getName();
+			this.endpointUrlPath = endpointConfig.getUrlPath();
+			if (endpointConfig.getKeystore() != null) {
+				this.keystorePath = endpointConfig.getKeystore().getPath();
+				this.keystorePassword = endpointConfig.getKeystore().getPassword();
+				if (endpointConfig.getKeystore().getKey() != null) {
+					this.keystoreKeyAlias = endpointConfig.getKeystore().getKey().getAlias();
+					this.keystoreKeyPassword = endpointConfig.getKeystore().getKey().getPassword();
+				}
+			}
+		}
+		this.keystore = keystore;
+		this.keystoreCertificate = keystoreCertificate;
+		this.keystoreCertificateCode = keystoreCertificateCode;
+		this.truststore = truststore;
+		this.truststoreFirstCertificate = truststoreFirstCertificate;
+		this.mode = mode;
+	}
+
+	public static EndpointConfigData of(EndpointConfig endpointConfig, KeyStore keystore, X509Certificate keystoreCertificate, String keystoreCertificateCode, KeyStore truststore, X509Certificate truststoreFirstCertificate, Mode mode) {
+		return new EndpointConfigData(endpointConfig, keystore, keystoreCertificate, keystoreCertificateCode, truststore, truststoreFirstCertificate, mode);
+	}
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -25,12 +60,10 @@ public class EndpointConfigData {
 		} else {
 			sb.append("null");
 		}
-		sb.append(" by ");
-		sb.append(this.endpointConfig);
-		sb.append(" on ");
-		if (keystoreCertificate != null) {
-			sb.append(keystoreCertificate.getSubjectX500Principal());
-		}
+		sb.append(" for ");
+		sb.append(keystoreCertificateCode);
 		return sb.toString();
 	}
+
+
 }

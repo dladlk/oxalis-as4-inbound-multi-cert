@@ -11,6 +11,8 @@ import com.google.inject.servlet.ServletModule;
 import lombok.extern.slf4j.Slf4j;
 import network.oxalis.as4.inbound.As4InboundHandler;
 import network.oxalis.as4.inbound.As4Provider;
+import network.oxalis.as4.inbound.multi.cert.CertificateCodeExtractor;
+import network.oxalis.as4.inbound.multi.cert.PeppolNemHandelCertificateCodeExtractor;
 
 @Slf4j
 @com.mercell.nemhandel.as4.Rewritten(network.oxalis.as4.inbound.As4InboundModule.class)
@@ -22,7 +24,7 @@ public class As4MultiCertInboundModule extends ServletModule {
 
 	@Override
 	protected void configureServlets() {
-		log.info("Installing AS4 MultiCertConfig Inbound module...");
+		log.info("Installing AS4 MultiCert Inbound module...");
 
 		bind(AbstractEndpointSelectionInterceptor.class).to(As4MultiCertEndpointSelector.class);
 
@@ -33,6 +35,7 @@ public class As4MultiCertInboundModule extends ServletModule {
 		bind(As4Provider.class);
 		bind(As4MultiCertEndpointsPublisher.class).to(As4MultiCertEndpointsPublisherImpl.class);
 		bind(As4InboundHandler.class);
+		bind(CertificateCodeExtractor.class).to(PeppolNemHandelCertificateCodeExtractor.class);
 
 		serve(PUBLISHED_ENDPOINT_PREFIX + "/status").with(AS4MultiCertStatusServlet.class);
 		serve(PUBLISHED_ENDPOINT_PREFIX + "*").with(Key.get(HttpServlet.class, Names.named(OXALIS_AS4_MULTICERT)));

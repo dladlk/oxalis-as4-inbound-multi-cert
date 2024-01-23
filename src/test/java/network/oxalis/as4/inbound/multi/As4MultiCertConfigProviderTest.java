@@ -14,7 +14,8 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 import lombok.extern.slf4j.Slf4j;
-import network.oxalis.as4.inbound.multi.config.EndpointConfig;
+import network.oxalis.as4.inbound.multi.cert.CertificateCodeExtractor;
+import network.oxalis.as4.inbound.multi.cert.PeppolNemHandelCertificateCodeExtractor;
 import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
 import network.oxalis.as4.inbound.multi.config.MultiCertConfigData;
 
@@ -31,23 +32,22 @@ public class As4MultiCertConfigProviderTest {
 		// Exclude FRTEST and DUMMY modes to spead-up detection and omit DUMMY mode detected before PRODUCTION
 		localConfig = localConfig.withoutPath("mode.FRTEST").withoutPath("mode.DUMMY");
 
-		As4MultiCertConfigProvider configProvider = new As4MultiCertConfigProvider(referenceConfig, localConfig, confPath, null, null);
+		CertificateCodeExtractor extractor = new PeppolNemHandelCertificateCodeExtractor();
+		As4MultiCertConfigProvider configProvider = new As4MultiCertConfigProvider(referenceConfig, localConfig, confPath, null, null, extractor);
 		assertNotNull(configProvider);
 		MultiCertConfigData config = configProvider.getConfigData();
-		log.info("MultiCert Config: {}", config.getMultiCertConfig());
+		log.info("MultiCert Config: {}", config);
 		assertNotNull(config);
-		List<EndpointConfigData> endpoints = config.getEndpointConfigDataList();
+		List<EndpointConfigData> endpoints = config.getEndpointList();
 		assertNotNull(endpoints);
-		assertEquals(3, config.getEndpointConfigDataList().size());
-		for (EndpointConfigData endpointData : endpoints) {
-			EndpointConfig endpoint = endpointData.getEndpointConfig();
-			assertNotNull(endpoint.getUrlPath());
+		assertEquals(3, endpoints.size());
+		for (EndpointConfigData endpoint : endpoints) {
+			assertNotNull(endpoint.getEndpointUrlPath());
 			assertNotNull(endpoint.getKeystore());
-			assertNotNull(endpoint.getKeystore().getPath());
-			assertNotNull(endpoint.getKeystore().getPassword());
-			assertNotNull(endpoint.getKeystore().getKey());
-			assertNotNull(endpoint.getKeystore().getKey().getAlias());
-			assertNotNull(endpoint.getKeystore().getKey().getPassword());
+			assertNotNull(endpoint.getKeystorePath());
+			assertNotNull(endpoint.getKeystorePassword());
+			assertNotNull(endpoint.getKeystoreKeyAlias());
+			assertNotNull(endpoint.getKeystoreKeyPassword());
 		}
 	}
 
