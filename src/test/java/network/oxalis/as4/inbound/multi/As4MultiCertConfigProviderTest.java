@@ -3,7 +3,6 @@ package network.oxalis.as4.inbound.multi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -23,7 +22,7 @@ import network.oxalis.as4.inbound.multi.config.MultiCertConfigData;
 public class As4MultiCertConfigProviderTest {
 
 	@Test
-	public void testGetConfig() throws URISyntaxException {
+	public void testGetConfig() throws Exception {
 		Config referenceConfig = ConfigFactory.defaultReference();
 
 		Path confPath = Paths.get(this.getClass().getResource("/oxalis_home").toURI());

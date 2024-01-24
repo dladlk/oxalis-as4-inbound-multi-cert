@@ -58,7 +58,7 @@ public class As4MultiCertConfigProvider {
 		this.certificateCodeExtractor = certificateCodeExtractor;
 		
 		// Make it possible to inject As4MultiCertConfigProvider even if nothing is configured
-		if (multiCertConfig.hasPath(CONFIG_PATH)) {
+		if (multiCertConfig != null && multiCertConfig.hasPath(CONFIG_PATH)) {
 			ConfigObject prefixObject = multiCertConfig.getObject(CONFIG_PATH);
 			Config prefixConfig = prefixObject.toConfig();
 			MultiCertConfig multiCertConfigData = ConfigBeanFactory.create(prefixConfig, MultiCertConfig.class);
@@ -92,11 +92,20 @@ public class As4MultiCertConfigProvider {
         	modeDetectionObjectStorage.put("crlFetcher", crlFetcher);
         }
 
+        Map<String, EndpointConfig> endpointIdSet = new HashMap<>();
+        Map<String, EndpointConfig> endpointUrlPathSet = new HashMap<>();
 		for (EndpointConfig endpointConfig : multiCertConfig.getEndpoints()) {
 			log.info("Building config data by config {}", endpointConfig);
 			
 			if (!isValidConfig(endpointConfig)) {
 				log.warn("Skip endpoint configuration {} as invalid", endpointConfig);
+				continue;
+			}
+			
+			if (!isValidUniqueKey(endpointConfig, endpointConfig.getId(), endpointIdSet, "id")) {
+				continue;
+			}
+			if (!isValidUniqueKey(endpointConfig, endpointConfig.getUrlPath(), endpointUrlPathSet, "urlPath")) {
 				continue;
 			}
 
@@ -131,6 +140,17 @@ public class As4MultiCertConfigProvider {
 		}
 		log.info("Loaded {} endpoints in {} ms", d.getEndpointListSize(), System.currentTimeMillis() - start);
 		return d;
+	}
+
+	protected boolean isValidUniqueKey(EndpointConfig endpointConfig, String value, Map<String, EndpointConfig> map, String field) {
+		EndpointConfig duplicate;
+		String key = value.toLowerCase();
+		if ((duplicate = map.get(key)) != null) {
+			log.warn("Skip endpoint configuration {} because its {}={} is duplicated in {}", endpointConfig, field, key, duplicate);
+			return false;
+		}
+		map.put(key, endpointConfig);
+		return true;
 	}
 
 	protected boolean isValidConfig(EndpointConfig ec) {
