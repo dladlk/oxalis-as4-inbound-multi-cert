@@ -27,10 +27,6 @@ public class As4MultiCertEndpointSelector extends AbstractEndpointSelectionInter
 		String messageUri = (String) message.get("org.apache.cxf.request.uri");
 		log.debug("Searching for matching endpoint for message by uri {} among {} registered endpoints", messageUri, endpoints.size());
 		
-		log.debug("Full uri: {}", messageUri);
-		if (messageUri.startsWith("/as4")) {
-			messageUri = messageUri.substring("/as4".length());
-		}
 		log.debug("Match endpoint by uri {}", messageUri.length() == 0 ? "DEFAULT" : messageUri);
 		String path = messageUri;
 		for (Endpoint endpoint : endpoints) {

@@ -63,7 +63,7 @@ public class As4MultiCertEndpointsPublisherImpl implements As4MultiCertEndpoints
     private As4MultiCertEndpointDataPostInterceptor endpointDataPostInterceptor;
 
     @Override
-    public EndpointImpl publish(Bus bus, String path) {
+    public EndpointImpl publish(Bus bus, String path, String fullUri) {
         EndpointImpl endpoint = (EndpointImpl) Endpoint.publish(path, as4Provider,
                 new LoggingFeature(),
                 new WSPolicyFeature());
@@ -74,7 +74,7 @@ public class As4MultiCertEndpointsPublisherImpl implements As4MultiCertEndpoints
 //                .put(As4EndpointSelector.ENDPOINT_NAME, As4EndpointSelector.OXALIS_AS4_ENDPOINT_NAME);
 
         endpoint.getServer().getEndpoint()
-        		.put(As4MultiCertEndpointSelector.ENDPOINT_PATH, path);
+        		.put(As4MultiCertEndpointSelector.ENDPOINT_PATH, fullUri);
 
         
         endpoint.getBinding().setHandlerChain(Arrays.asList(as4FaultInHandler, new MessagingHandler()));

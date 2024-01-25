@@ -54,15 +54,22 @@ public class As4MultiCertServlet extends CXFNonSpringServlet {
 
 		MultiCertConfigData multiCertConfigData = configProvider.getConfigData();
 
-		log.info("Installing {} endpoints into CXF bus...", multiCertConfigData.getEndpointListSize());
-
+		String contextPath = servletConfig.getServletContext().getContextPath();
+		
+		log.info("Installing {} endpoints into CXF bus with context path '{}'...", multiCertConfigData.getEndpointListSize(), contextPath);
+		if ("/".equals(contextPath)) {
+			contextPath = "";
+		}
+		
 		List<EndpointConfigData> endpointList = multiCertConfigData.getEndpointList();
 		for (int i = 0; i < endpointList.size(); i++) {
 			EndpointConfigData endpointConfigData = endpointList.get(i);
 
 			String urlSuffix = endpointConfigData.getEndpointUrlPath();
-			log.info("Publish endpoint on path \'{}{}\' in mode {}", As4MultiCertInboundModule.PUBLISHED_ENDPOINT_PREFIX, urlSuffix, endpointConfigData.getMode().getIdentifier());
-			EndpointImpl endpointImpl = endpointsPublisher.publish(getBus(), urlSuffix);
+			String fullUri = contextPath + As4MultiCertInboundModule.PUBLISHED_ENDPOINT_PREFIX + urlSuffix;
+			
+			log.info("Publish endpoint on path \'{}\' in mode {}", fullUri, endpointConfigData.getMode().getIdentifier());
+			EndpointImpl endpointImpl = endpointsPublisher.publish(getBus(), urlSuffix, fullUri);
 
 			endpointImpl.getProperties().put(As4MultiCertConstants.MULTI_CERT_ENDPOINT_CONFIG_DATA, endpointConfigData);
 
