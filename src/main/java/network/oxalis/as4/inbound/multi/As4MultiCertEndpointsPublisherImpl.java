@@ -34,6 +34,8 @@ import network.oxalis.as4.inbound.SetPolicyInInterceptor;
 import network.oxalis.as4.inbound.SetPolicyOutInterceptor;
 import network.oxalis.as4.inbound.multi.holder.As4MultiCertEndpointDataPostInterceptor;
 import network.oxalis.as4.inbound.multi.holder.As4MultiCertEndpointDataPreInterceptor;
+import network.oxalis.as4.inbound.multi.listener.EndInterceptor;
+import network.oxalis.as4.inbound.multi.listener.StartInterceptor;
 
 @com.mercell.nemhandel.as4.Rewritten(network.oxalis.as4.inbound.As4EndpointsPublisherImpl.class)
 public class As4MultiCertEndpointsPublisherImpl implements As4MultiCertEndpointsPublisher {
@@ -62,6 +64,12 @@ public class As4MultiCertEndpointsPublisherImpl implements As4MultiCertEndpoints
     @Inject
     private As4MultiCertEndpointDataPostInterceptor endpointDataPostInterceptor;
 
+    @Inject
+    private StartInterceptor startListener;
+
+    @Inject
+    private EndInterceptor endListener;
+    
     @Override
     public EndpointImpl publish(Bus bus, String path, String fullUri) {
         EndpointImpl endpoint = (EndpointImpl) Endpoint.publish(path, as4Provider,
@@ -89,6 +97,10 @@ public class As4MultiCertEndpointsPublisherImpl implements As4MultiCertEndpoints
         endpoint.getInInterceptors().add(endpointDataPreInterceptor);
         endpoint.getInInterceptors().add(endpointDataPostInterceptor);
 
+        endpoint.getInInterceptors().add(startListener);
+        endpoint.getOutInterceptors().add(endListener);
+        endpoint.getOutFaultInterceptors().add(endListener);
+        
         MultipleEndpointObserver newMO = new MultipleEndpointObserver(bus) {
             @Override
             protected Message createMessage(Message message) {
