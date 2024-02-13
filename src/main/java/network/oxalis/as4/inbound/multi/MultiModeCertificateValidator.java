@@ -24,7 +24,7 @@ public class MultiModeCertificateValidator {
 	protected OcspFetcher ocspFetcher;
 	protected CrlFetcher crlFetcher;
 	protected Map<String, Object> objectStorage;
-	protected Map<Mode, CertificateValidator> validatorMap;
+	protected Map<String, CertificateValidator> validatorMap;
 
 	@Inject
 	public MultiModeCertificateValidator(OcspFetcher ocspFetcher, CrlFetcher crlFetcher) {
@@ -50,12 +50,12 @@ public class MultiModeCertificateValidator {
 		if (mode == null) {
 			throw new PeppolLoadingException("MultiModeCertificateValidator.getCertificateValidatorByMode with null mode");
 		}
-		CertificateValidator certificateValidator = validatorMap.get(mode);
+		CertificateValidator certificateValidator = validatorMap.get(mode.getIdentifier());
 		if (certificateValidator == null) {
 			long start = System.currentTimeMillis();
 			certificateValidator = mode.initiate("security.validator.class", CertificateValidator.class, objectStorage);
 			log.info("Built new certificate validator for mode {} in {}", mode.getIdentifier(), System.currentTimeMillis() - start);
-			validatorMap.put(mode, certificateValidator);
+			validatorMap.put(mode.getIdentifier(), certificateValidator);
 		}
 		return certificateValidator;
 	}
