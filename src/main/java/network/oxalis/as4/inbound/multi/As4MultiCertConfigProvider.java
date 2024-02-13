@@ -31,11 +31,8 @@ import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
 import network.oxalis.as4.inbound.multi.config.EndpointKeystoreConfig;
 import network.oxalis.as4.inbound.multi.config.MultiCertConfig;
 import network.oxalis.as4.inbound.multi.config.MultiCertConfigData;
-import network.oxalis.commons.certvalidator.api.CrlFetcher;
-import network.oxalis.pkix.ocsp.api.OcspFetcher;
 import network.oxalis.vefa.peppol.common.lang.PeppolLoadingException;
 import network.oxalis.vefa.peppol.mode.Mode;
-import network.oxalis.vefa.peppol.security.ModeDetector;
 
 @Singleton
 @Slf4j
@@ -45,17 +42,15 @@ public class As4MultiCertConfigProvider {
 	protected MultiCertConfigData configData;
 	protected Path confFolderPath;
 	protected Config config;
-	protected OcspFetcher ocspFetcher;
-	protected CrlFetcher crlFetcher;
 	protected CertificateCodeExtractor certificateCodeExtractor;
+	protected MultiModeCertificateValidator certificateValidator;
 
 	@Inject
-	public As4MultiCertConfigProvider(Config multiCertConfig, Config modeDetectConfig, @Named("conf") Path confFolderPath, OcspFetcher ocspFetcher, CrlFetcher crlFetcher, CertificateCodeExtractor certificateCodeExtractor) {
+	public As4MultiCertConfigProvider(Config multiCertConfig, Config modeDetectConfig, @Named("conf") Path confFolderPath, CertificateCodeExtractor certificateCodeExtractor, MultiModeCertificateValidator certificateValidator) {
 		this.config = modeDetectConfig;
 		this.confFolderPath = confFolderPath;
-		this.ocspFetcher = ocspFetcher;
-		this.crlFetcher = crlFetcher;
 		this.certificateCodeExtractor = certificateCodeExtractor;
+		this.certificateValidator = certificateValidator;
 		
 		// Make it possible to inject As4MultiCertConfigProvider even if nothing is configured
 		if (multiCertConfig != null && multiCertConfig.hasPath(CONFIG_PATH)) {
@@ -83,15 +78,6 @@ public class As4MultiCertConfigProvider {
 		
 		MultiCertConfigData d = new MultiCertConfigData();
 		
-		// This logic is copied from network.oxalis.commons.mode.ModeProvider.get()
-        Map<String, Object> modeDetectionObjectStorage = new HashMap<>();
-        if (ocspFetcher != null) {
-        	modeDetectionObjectStorage.put("ocsp_fetcher", ocspFetcher);
-        }
-        if (crlFetcher != null) {
-        	modeDetectionObjectStorage.put("crlFetcher", crlFetcher);
-        }
-
         Map<String, EndpointConfig> endpointIdSet = new HashMap<>();
         Map<String, EndpointConfig> endpointUrlPathSet = new HashMap<>();
 		for (EndpointConfig endpointConfig : multiCertConfig.getEndpoints()) {
@@ -128,7 +114,7 @@ public class As4MultiCertConfigProvider {
 
 			Mode mode;
 			try {
-				mode = loadMode(modeDetectionObjectStorage, keystoreCertificate);
+				mode = loadMode(keystoreCertificate);
 			} catch (Exception e) {
 				log.error("Cannot detect mode by certificate " + keystoreCertificate.getSubjectX500Principal() + " from keystore by path " + keystoreConf.getPath() + " and alias " + keystoreConf.getKey().getAlias() + ", skip endpoint configuration for " + endpointConfig, e);
 				continue;
@@ -189,9 +175,9 @@ public class As4MultiCertConfigProvider {
 		return true;
 	}
 
-	protected Mode loadMode(Map<String, Object> modeDetectionObjectStorage, X509Certificate keystoreCertificate) throws PeppolLoadingException {
+	protected Mode loadMode(X509Certificate keystoreCertificate) throws PeppolLoadingException {
 		log.info("Detect mode for certificate {}", keystoreCertificate.getSubjectX500Principal());
-		return ModeDetector.detect(keystoreCertificate, config, modeDetectionObjectStorage);
+		return As4MultiCertModeDetector.detect(keystoreCertificate, certificateValidator, config);
 	}
 
 	protected X509Certificate loadTruststoreFirstCertificate(Mode mode, KeyStore truststore) {

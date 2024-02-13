@@ -32,7 +32,8 @@ public class As4MultiCertConfigProviderTest {
 		localConfig = localConfig.withoutPath("mode.FRTEST").withoutPath("mode.DUMMY");
 
 		CertificateCodeExtractor extractor = new PeppolNemHandelCertificateCodeExtractor();
-		As4MultiCertConfigProvider configProvider = new As4MultiCertConfigProvider(referenceConfig, localConfig, confPath, null, null, extractor);
+		MultiModeCertificateValidator validator = new MultiModeCertificateValidator(null, null);
+		As4MultiCertConfigProvider configProvider = new As4MultiCertConfigProvider(referenceConfig, localConfig, confPath, extractor, validator);
 		assertNotNull(configProvider);
 		MultiCertConfigData config = configProvider.getConfigData();
 		log.info("MultiCert Config: {}", config);

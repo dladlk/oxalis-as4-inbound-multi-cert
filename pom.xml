@@ -9,6 +9,7 @@
     </parent>
 
     <artifactId>oxalis-as4-inbound-multi-cert</artifactId>
+    <version>6.0.0.1</version>
     <packaging>jar</packaging>
     <name>Oxalis :: AS4 :: Inbound Multiple Certificates Endpoints</name>
     <description>Extension configuring multiple AS4 endpoints with different certificates</description>
