@@ -24,7 +24,7 @@ import com.typesafe.config.ConfigBeanFactory;
 import com.typesafe.config.ConfigObject;
 
 import lombok.extern.slf4j.Slf4j;
-import network.oxalis.api.lang.OxalisLoadingException;
+import network.oxalis.ng.api.lang.OxalisLoadingException;
 import network.oxalis.as4.inbound.multi.cert.CertificateCodeExtractor;
 import network.oxalis.as4.inbound.multi.config.EndpointConfig;
 import network.oxalis.as4.inbound.multi.config.EndpointConfigData;

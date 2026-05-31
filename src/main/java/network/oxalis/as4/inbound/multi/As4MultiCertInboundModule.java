@@ -1,6 +1,6 @@
 package network.oxalis.as4.inbound.multi;
 
-import javax.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServlet;
 
 import org.apache.cxf.wsdl.interceptors.AbstractEndpointSelectionInterceptor;
 
@@ -9,13 +9,13 @@ import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 
 import lombok.extern.slf4j.Slf4j;
-import network.oxalis.as4.inbound.As4InboundHandler;
-import network.oxalis.as4.inbound.As4Provider;
+import network.oxalis.ng.as4.inbound.As4InboundHandler;
+import network.oxalis.ng.as4.inbound.As4Provider;
 import network.oxalis.as4.inbound.multi.cert.CertificateCodeExtractor;
 import network.oxalis.as4.inbound.multi.cert.PeppolNemHandelCertificateCodeExtractor;
 
 @Slf4j
-@com.mercell.nemhandel.as4.Rewritten(network.oxalis.as4.inbound.As4InboundModule.class)
+@com.mercell.nemhandel.as4.Rewritten(network.oxalis.ng.as4.inbound.As4InboundModule.class)
 public class As4MultiCertInboundModule extends ServletModule {
 
 	private static final String OXALIS_AS4_MULTICERT = "oxalis-as4-multicert";
