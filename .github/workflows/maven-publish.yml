@@ -24,9 +24,6 @@ jobs:
         distribution: 'temurin'
         server-id: github_dladlk_oxalis_multicert # Value of the distributionManagement/repository/id field of the pom.xml
 
-    - name: Build WS with Maven
-      run: mvn -B package --file pom.xml
-
     - name: Publish WS to GitHub Packages Apache Maven
       run: mvn -B deploy --file pom.xml
       env:
