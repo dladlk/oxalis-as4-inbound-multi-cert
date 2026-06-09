@@ -168,7 +168,23 @@
 						</goals>
 					</execution>
 				</executions>
-            </plugin>            
+            </plugin>
+            <!-- Oxalis-NG injects sonatype plugin into deploy phase via parent pom, disable it to publish into github repo instead via normal maven-deploy-plugin-->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <executions>
+                  <execution>
+                    <!-- Must exactly match the id defined in the parent POM -->
+                    <id>injected-central-publishing</id>
+                    <phase>none</phase>
+                  </execution>
+                </executions>
+                <configuration>
+                    <skipPublishing>true</skipPublishing>
+                    <autoPublish>false</autoPublish>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
