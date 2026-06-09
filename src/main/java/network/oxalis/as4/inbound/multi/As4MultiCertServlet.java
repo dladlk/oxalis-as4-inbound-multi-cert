@@ -9,10 +9,10 @@ import static org.apache.cxf.rt.security.SecurityConstants.SIGNATURE_USERNAME;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.cxf.BusFactory;
 import org.apache.cxf.ext.logging.LoggingFeature;
@@ -32,7 +32,7 @@ import network.oxalis.as4.inbound.multi.config.MultiCertConfigData;
 @Slf4j
 @Singleton
 
-@com.mercell.nemhandel.as4.Rewritten(network.oxalis.as4.inbound.As4Servlet.class)
+@com.mercell.nemhandel.as4.Rewritten(network.oxalis.ng.as4.inbound.As4Servlet.class)
 public class As4MultiCertServlet extends CXFNonSpringServlet {
 
 	private static final long serialVersionUID = 6519468566215796167L;

@@ -4,7 +4,7 @@ import static org.apache.cxf.ws.security.SecurityConstants.ENABLE_STREAMING_SECU
 
 import java.util.Arrays;
 
-import javax.xml.ws.Endpoint;
+import jakarta.xml.ws.Endpoint;
 
 import org.apache.cxf.Bus;
 import org.apache.cxf.attachment.As4AttachmentInInterceptor;
@@ -25,19 +25,19 @@ import org.apache.cxf.wsdl.interceptors.AbstractEndpointSelectionInterceptor;
 
 import com.google.inject.Inject;
 
-import network.oxalis.as4.inbound.As4FaultInHandler;
-import network.oxalis.as4.inbound.As4Interceptor;
-import network.oxalis.as4.inbound.As4Provider;
-import network.oxalis.as4.inbound.AttachmentCleanupInterceptor;
-import network.oxalis.as4.inbound.MessagingHandler;
-import network.oxalis.as4.inbound.SetPolicyInInterceptor;
-import network.oxalis.as4.inbound.SetPolicyOutInterceptor;
+import network.oxalis.ng.as4.inbound.As4FaultInHandler;
+import network.oxalis.ng.as4.inbound.As4Interceptor;
+import network.oxalis.ng.as4.inbound.As4Provider;
+import network.oxalis.ng.as4.inbound.AttachmentCleanupInterceptor;
+import network.oxalis.ng.as4.inbound.MessagingHandler;
+import network.oxalis.ng.as4.inbound.SetPolicyInInterceptor;
+import network.oxalis.ng.as4.inbound.SetPolicyOutInterceptor;
 import network.oxalis.as4.inbound.multi.holder.As4MultiCertEndpointDataPostInterceptor;
 import network.oxalis.as4.inbound.multi.holder.As4MultiCertEndpointDataPreInterceptor;
 import network.oxalis.as4.inbound.multi.listener.EndInterceptor;
 import network.oxalis.as4.inbound.multi.listener.StartInterceptor;
 
-@com.mercell.nemhandel.as4.Rewritten(network.oxalis.as4.inbound.As4EndpointsPublisherImpl.class)
+@com.mercell.nemhandel.as4.Rewritten(network.oxalis.ng.as4.inbound.As4EndpointsPublisherImpl.class)
 public class As4MultiCertEndpointsPublisherImpl implements As4MultiCertEndpointsPublisher {
 
     @Inject

@@ -6,19 +6,19 @@ import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.List;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import network.oxalis.as4.inbound.OxalisAS4Version;
+import network.oxalis.ng.as4.inbound.OxalisAS4Version;
 import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
 import network.oxalis.as4.inbound.multi.config.MultiCertConfigData;
 import network.oxalis.vefa.peppol.mode.Mode;
 
-@com.mercell.nemhandel.as4.Rewritten(network.oxalis.as4.inbound.AS4StatusServlet.class)
+@com.mercell.nemhandel.as4.Rewritten(network.oxalis.ng.as4.inbound.AS4StatusServlet.class)
 @Singleton
 public class AS4MultiCertStatusServlet extends HttpServlet {
 

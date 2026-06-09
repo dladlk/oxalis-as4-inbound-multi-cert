@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.Bus;
@@ -41,16 +41,16 @@ import com.google.inject.util.Modules;
 import com.typesafe.config.Config;
 
 import lombok.extern.slf4j.Slf4j;
-import network.oxalis.api.lang.OxalisTransmissionException;
-import network.oxalis.api.outbound.MessageSender;
-import network.oxalis.api.outbound.TransmissionRequest;
-import network.oxalis.api.outbound.TransmissionResponse;
-import network.oxalis.api.tag.Tag;
-import network.oxalis.as4.api.MessageIdGenerator;
-import network.oxalis.as4.common.DefaultMessageIdGenerator;
-import network.oxalis.as4.util.OxalisAlgorithmSuiteLoader;
-import network.oxalis.as4.util.PeppolConfiguration;
-import network.oxalis.commons.guice.GuiceModuleLoader;
+import network.oxalis.ng.api.lang.OxalisTransmissionException;
+import network.oxalis.ng.api.outbound.MessageSender;
+import network.oxalis.ng.api.outbound.TransmissionRequest;
+import network.oxalis.ng.api.outbound.TransmissionResponse;
+import network.oxalis.ng.api.tag.Tag;
+import network.oxalis.ng.as4.api.MessageIdGenerator;
+import network.oxalis.ng.as4.common.DefaultMessageIdGenerator;
+import network.oxalis.ng.as4.util.OxalisAlgorithmSuiteLoader;
+import network.oxalis.ng.as4.util.PeppolConfiguration;
+import network.oxalis.ng.commons.guice.GuiceModuleLoader;
 import network.oxalis.vefa.peppol.common.model.DocumentTypeIdentifier;
 import network.oxalis.vefa.peppol.common.model.Endpoint;
 import network.oxalis.vefa.peppol.common.model.Header;

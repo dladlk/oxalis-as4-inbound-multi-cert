@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
 
 @Slf4j
-@com.mercell.nemhandel.as4.Rewritten(network.oxalis.as4.inbound.As4EndpointSelector.class)
+@com.mercell.nemhandel.as4.Rewritten(network.oxalis.ng.as4.inbound.As4EndpointSelector.class)
 public class As4MultiCertEndpointSelector extends AbstractEndpointSelectionInterceptor {
 
 	public static final String ENDPOINT_PATH = "Endpoint-path";
