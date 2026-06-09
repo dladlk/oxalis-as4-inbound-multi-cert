@@ -25,6 +25,6 @@ jobs:
         server-id: github
 
     - name: Build and publish
-      run: mvn -B clean deploy --file pom.xml
+      run: mvn -B clean package deploy:deploy --no-transfer-progress --file pom.xml
       env:
         GITHUB_TOKEN: ${{ github.token }}
