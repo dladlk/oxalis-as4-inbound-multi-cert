@@ -22,12 +22,9 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-        server-id: github_dladlk_oxalis_multicert # Value of the distributionManagement/repository/id field of the pom.xml
+        server-id: github
 
-    - name: Build
-      run: mvn -B clean package --file pom.xml
-
-    - name: Publish GitHub Packages Apache Maven
-      run: mvn -B deploy --file pom.xml
+    - name: Build and publish
+      run: mvn -B clean deploy --file pom.xml
       env:
         GITHUB_TOKEN: ${{ github.token }}

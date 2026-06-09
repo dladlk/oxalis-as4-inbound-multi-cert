@@ -174,7 +174,7 @@
 
     <distributionManagement>
         <repository>
-            <id>github_dladlk_oxalis_multicert</id>
+            <id>github</id>
             <name>GitHub Packages</name>
             <url>https://maven.pkg.github.com/dladlk/oxalis-as4-inbound-multi-cert</url>
         </repository>
