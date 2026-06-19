@@ -99,18 +99,19 @@ public class As4MultiCertConfigProvider {
 			KeyStore keyStore = loadKeyStore(keystoreConf, confFolderPath);
 
 			String keyAlias = keystoreConf.getKey().getAlias();
-			X509Certificate keystoreCertificate;
+			X509Certificate keystoreCertificate = null;
 			try {
 				keystoreCertificate = (X509Certificate) keyStore.getCertificate(keyAlias);
 			} catch (Exception e) {
 				log.error("Cannot find certificate by alias '" + keyAlias + "' in keystore by path " + keystoreConf.getPath() + ", skip endpoint configuration for " + endpointConfig, e);
 				continue;
 			}
-			
-			String keystoreCertificateCode = null;
-			if (keystoreCertificate != null) {
-				keystoreCertificateCode = certificateCodeExtractor.extract(keystoreCertificate);
+			if (keystoreCertificate == null) {
+				log.error("Cannot load certificate by alias '" + keyAlias + "' in keystore by path " + keystoreConf.getPath() + ", skip endpoint configuration for " + endpointConfig);
+				continue;
 			}
+			
+			String keystoreCertificateCode = certificateCodeExtractor.extract(keystoreCertificate);
 
 			Mode mode;
 			try {
