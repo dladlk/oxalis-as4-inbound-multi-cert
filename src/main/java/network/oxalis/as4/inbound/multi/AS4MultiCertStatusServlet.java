@@ -41,6 +41,7 @@ public class AS4MultiCertStatusServlet extends HttpServlet {
 			includeBase64 = true;
 		}
 
+		@SuppressWarnings("resource")
 		PrintWriter writer = resp.getWriter();
 		writer.println("version.oxalis.as4: " + OxalisAS4Version.getVersion());
 		writer.println("version.java: " + System.getProperty("java.version"));

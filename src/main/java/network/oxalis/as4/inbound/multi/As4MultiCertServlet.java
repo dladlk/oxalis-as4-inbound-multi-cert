@@ -7,6 +7,7 @@ import static org.apache.cxf.rt.security.SecurityConstants.SIGNATURE_PASSWORD;
 import static org.apache.cxf.rt.security.SecurityConstants.SIGNATURE_USERNAME;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import jakarta.servlet.ServletConfig;
@@ -69,6 +70,7 @@ public class As4MultiCertServlet extends CXFNonSpringServlet {
 			String fullUri = contextPath + As4MultiCertInboundModule.PUBLISHED_ENDPOINT_PREFIX + urlSuffix;
 			
 			log.info("Publish endpoint on path \'{}\' in mode {}", fullUri, endpointConfigData.getMode().getIdentifier());
+			@SuppressWarnings("resource")
 			EndpointImpl endpointImpl = endpointsPublisher.publish(getBus(), urlSuffix, fullUri);
 
 			endpointImpl.getProperties().put(As4MultiCertConstants.MULTI_CERT_ENDPOINT_CONFIG_DATA, endpointConfigData);
@@ -93,7 +95,9 @@ public class As4MultiCertServlet extends CXFNonSpringServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		try {
 			response.setStatus(HttpServletResponse.SC_OK);
-			response.getWriter().write("Hello AS4 world\n");
+			@SuppressWarnings("resource")
+			PrintWriter writer = response.getWriter();
+			writer.write("Hello AS4 world\n");
 		} catch (IOException e) {
 			throw new ServletException("Unable to send response", e);
 		}
