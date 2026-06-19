@@ -10,7 +10,7 @@ import network.oxalis.ng.as4.common.MerlinProvider;
 import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
 
 @Singleton
-@com.mercell.nemhandel.as4.Rewritten(network.oxalis.ng.as4.common.MerlinProvider.class)
+@com.acentio.nemhandel.as4.Rewritten(network.oxalis.ng.as4.common.MerlinProvider.class)
 public class As4MultiCertMerlinProvider extends MerlinProvider {
 
 	protected Merlin defaultMerlin;

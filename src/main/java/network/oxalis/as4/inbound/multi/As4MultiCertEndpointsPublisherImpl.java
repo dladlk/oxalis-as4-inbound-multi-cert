@@ -37,7 +37,7 @@ import network.oxalis.as4.inbound.multi.holder.As4MultiCertEndpointDataPreInterc
 import network.oxalis.as4.inbound.multi.listener.EndInterceptor;
 import network.oxalis.as4.inbound.multi.listener.StartInterceptor;
 
-@com.mercell.nemhandel.as4.Rewritten(network.oxalis.ng.as4.inbound.As4EndpointsPublisherImpl.class)
+@com.acentio.nemhandel.as4.Rewritten(network.oxalis.ng.as4.inbound.As4EndpointsPublisherImpl.class)
 public class As4MultiCertEndpointsPublisherImpl implements As4MultiCertEndpointsPublisher {
 
     @Inject

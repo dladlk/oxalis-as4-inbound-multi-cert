@@ -13,7 +13,7 @@ import network.oxalis.vefa.peppol.security.lang.PeppolSecurityException;
 
 @Slf4j
 
-@com.mercell.nemhandel.as4.Rewritten(network.oxalis.vefa.peppol.security.ModeDetector.class)
+@com.acentio.nemhandel.as4.Rewritten(network.oxalis.vefa.peppol.security.ModeDetector.class)
 public class As4MultiCertModeDetector {
 
 	public static Mode detect(X509Certificate certificate, MultiModeCertificateValidator validator) throws PeppolLoadingException {

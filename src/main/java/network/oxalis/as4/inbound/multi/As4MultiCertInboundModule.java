@@ -15,7 +15,7 @@ import network.oxalis.as4.inbound.multi.cert.CertificateCodeExtractor;
 import network.oxalis.as4.inbound.multi.cert.PeppolNemHandelCertificateCodeExtractor;
 
 @Slf4j
-@com.mercell.nemhandel.as4.Rewritten(network.oxalis.ng.as4.inbound.As4InboundModule.class)
+@com.acentio.nemhandel.as4.Rewritten(network.oxalis.ng.as4.inbound.As4InboundModule.class)
 public class As4MultiCertInboundModule extends ServletModule {
 
 	private static final String OXALIS_AS4_MULTICERT = "oxalis-as4-multicert";

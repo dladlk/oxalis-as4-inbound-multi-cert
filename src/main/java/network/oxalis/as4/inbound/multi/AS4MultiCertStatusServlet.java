@@ -18,7 +18,7 @@ import network.oxalis.as4.inbound.multi.config.EndpointConfigData;
 import network.oxalis.as4.inbound.multi.config.MultiCertConfigData;
 import network.oxalis.vefa.peppol.mode.Mode;
 
-@com.mercell.nemhandel.as4.Rewritten(network.oxalis.ng.as4.inbound.AS4StatusServlet.class)
+@com.acentio.nemhandel.as4.Rewritten(network.oxalis.ng.as4.inbound.AS4StatusServlet.class)
 @Singleton
 public class AS4MultiCertStatusServlet extends HttpServlet {
 

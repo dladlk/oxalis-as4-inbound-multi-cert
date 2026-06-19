@@ -32,7 +32,7 @@ import network.oxalis.as4.inbound.multi.config.MultiCertConfigData;
 @Slf4j
 @Singleton
 
-@com.mercell.nemhandel.as4.Rewritten(network.oxalis.ng.as4.inbound.As4Servlet.class)
+@com.acentio.nemhandel.as4.Rewritten(network.oxalis.ng.as4.inbound.As4Servlet.class)
 public class As4MultiCertServlet extends CXFNonSpringServlet {
 
 	private static final long serialVersionUID = 6519468566215796167L;

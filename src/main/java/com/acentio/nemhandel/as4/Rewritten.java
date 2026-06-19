@@ -1,4 +1,4 @@
-package com.mercell.nemhandel.as4;
+package com.acentio.nemhandel.as4;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,10 +12,8 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
-public @interface RewrittenSource {
+public @interface Rewritten {
 
-	/** 
-	 * Class name - if not visible as Class
-	 */
-	String value();
+	Class<?> value();
+	
 }
