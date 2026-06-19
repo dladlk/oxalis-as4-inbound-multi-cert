@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServlet;
@@ -67,6 +68,10 @@ public class AS4MultiCertStatusServlet extends HttpServlet {
 				if (endpointCert != null) {
 					writer.println(prefix + "certificate: " + endpointCert.getSubjectX500Principal().toString());
 					writer.println(prefix + "certificate.sn: " + endpointCert.getSerialNumber());
+					writer.println(prefix + "certificate.expiration: " + endpointCert.getNotAfter());
+					if (endpointCert.getNotAfter() != null) {
+						writer.println(prefix + "certificate.expired: " + endpointCert.getNotAfter().before(new Date()));
+					}
 					writer.println(prefix + "certificate.code: " + endpoint.getKeystoreCertificateCode());
 					writer.println(prefix + "certificate.owner: " + endpoint.getKeystoreCertificateOwner());
 					if (includeBase64) {
